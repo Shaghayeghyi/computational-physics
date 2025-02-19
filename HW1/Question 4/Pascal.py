@@ -10,8 +10,12 @@ import matplotlib.pyplot as plt
 #we also has two loops
 n=5
 for i in range(n):
+    #we need spacing from left, like a half empty square
+    print((n-i)*" ", end=" ")
+    #we also stop the automatic line change
     for j in range(i+1):
         #at row i and position j
         #we have n rows and i+1 number on each row
         number=m.factorial(i) // (m.factorial(j) * m.factorial(i - j))
-        print(number)
+        print(number, end=" ")
+    print()
