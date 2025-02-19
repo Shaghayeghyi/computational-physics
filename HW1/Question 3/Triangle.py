@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math as m
+import matplotlib.patches as patches
 
 #alright we need to create a triangle
 #we need three coordinate in a 2D world
@@ -9,16 +10,23 @@ p2=np.array([1,0])
 #the apex of equilateral Triangle
 p3=np.array([1/2,m.sqrt(3)/2])
 #get the set of coordinates to describe the T
-tr=np.array([p1,p3,p2,p1])
-'''plt.plot(tr[:,0], tr[:,1])
-plt.show()'''
+tr=np.array([p1,p3,p2])
+
 #i believe everything is very similar to the last code
 #i need to work with three lines and i also need to work with three functions
 #f1 should scale all 3 lines by 1/2
 #f2 should do the same but transfer the new tri by (0, 1/2)
 #f3 should scale too but it has a transfer by (1/4, sqrt3/4)
-#another thing is thati nee a colored triangle to start with
+#another thing is that i need is a colored triangle to start with
 
+# I will use Polygan for it
+fig, ax = plt.subplots()
+colored_T= plt.Polygon(tr, color='blue')
+ax.add_patch(colored_T)
+plt.show()
+
+# Optionally, plot the outline of the triangle
+ax.plot(tr[:, 0], tr[:, 1], 'k-', linewidth=2)
 def scale(l0):
     #scale by half
     S=np.array([[1/2,0],[0,1/2]])
