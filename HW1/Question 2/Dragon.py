@@ -61,7 +61,7 @@ def RT_135(l0):
 line0=np.array([pi,pf])
 #this is now 2x2 the column 0 are the x and the column 1 is the y as usual:)
 #the functions with get line0 and give back the two lines of step 1, then we should apply the functions on our new lines and go on
-l1=R_45(line0)
+'''l1=R_45(line0)
 l2=RT_135(line0)
 print(l1)
 print(l2)
@@ -71,4 +71,28 @@ plt.plot(l1[:,0],l1[:,1], c='b')
 plt.plot(l2[:,0],l2[:,1], c='r')
 #this little guy helped me with axis symmetry :)
 plt.axis('equal')
-plt.show()  
+plt.show()'''
+
+#so things are working good, Step0 we have a line, step 2 we have 2 lines and for the next step we have to apply f1 and f2 two both of the lines
+
+def fractal(l0, iteration):
+    if iteration==0:
+        plotting=l0
+        plt.plot(plotting[:,0],plotting[:,1], c='b')
+        return
+
+    else:
+        #we will define two lines
+        l1=R_45(l0)
+        l2=RT_135(l0)
+        #now each line should act as an l0 and get impacted by f1 and f2
+        #for instance on iteration 2,l0 will come to else and get divided to two section
+        #each section with number iteration 1, so l1 and l2 will come to else and get divied to two (4 new lines)
+        #then this 4 lines will get plotted on the if section
+        fractal(l1,iteration-1)
+        fractal(l2,iteration-1)
+        return
+    
+fractal(line0,2)
+plt.axis('equal')
+plt.show()
