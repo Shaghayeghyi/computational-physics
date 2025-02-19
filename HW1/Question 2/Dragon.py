@@ -78,7 +78,10 @@ plt.show()'''
 def fractal(l0, iteration):
     if iteration==0:
         plotting=l0
-        plt.plot(plotting[:,0],plotting[:,1], c='b')
+        if plotting==f1:
+            plt.plot(plotting[:,0],plotting[:,1], c='b')
+        if plotting==f2:
+            plt.plot(plotting[:,0],plotting[:,1], c='r')
         return
 
     else:
@@ -89,10 +92,41 @@ def fractal(l0, iteration):
         #for instance on iteration 2,l0 will come to else and get divided to two section
         #each section with number iteration 1, so l1 and l2 will come to else and get divied to two (4 new lines)
         #then this 4 lines will get plotted on the if section
-        fractal(l1,iteration-1)
-        fractal(l2,iteration-1)
+        f1=fractal(l1,iteration-1)
+        f2=fractal(l2,iteration-1)
         return
     
 fractal(line0,2)
 plt.axis('equal')
 plt.show()
+
+
+#okay for different colors in my vision, we have two sides with two different color on the step1 left side is blue nd right side is red and we go on with the fractal from here
+#so i will need a new parameter to describe this
+
+
+#color fractal
+def C_fractal(l0, iteration, i=0):
+    if iteration==0:
+        plotting=l0
+        if plotting==f1:
+            plt.plot(plotting[:,0],plotting[:,1], c='b')
+        if plotting==f2:
+            plt.plot(plotting[:,0],plotting[:,1], c='r')
+        return
+
+    else:
+        #we will define two lines
+        l1=R_45(l0)
+        l2=RT_135(l0)
+        #now each line should act as an l0 and get impacted by f1 and f2
+        #for instance on iteration 2,l0 will come to else and get divided to two section
+        #each section with number iteration 1, so l1 and l2 will come to else and get divied to two (4 new lines)
+        #then this 4 lines will get plotted on the if section
+        f1=fractal(l1,iteration-1, i=0)
+        f2=fractal(l2,iteration-1, i=1)
+        #i=0 is left side
+        #i=1 is right side
+        return
+    
+
