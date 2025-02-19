@@ -5,7 +5,7 @@ import math as m
 #we will again begin with a line
 pi=np.array([0,0])
 pf=np.array([1,0])
-#we will also have a middle part
+'''#we will also have a middle part
 pm=(pf+pi)/2
 #we again need a rotation but this time pm must rotate with respect to the origin
 def rotation(R_end, R_origin, tetha):
@@ -24,7 +24,7 @@ plt.figure(figsize=(6,6))
 plt.plot(data_plot[:,0],data_plot[:,1])
 #this little guy helped me with axis symmetry :)
 plt.axis('equal')
-plt.show()
+plt.show()'''
 
 #I better work toward the two functions the problem wnats
 #we will start by a line with unit lenght
@@ -33,26 +33,33 @@ plt.show()
 #we will have the blue line
 #we should repeat this process for our new lines so lets define these functions first
 
-def R_35(pi,pf):
+def R_45(l0):
     #45 degree rotation and scaling combined
     tetha=45
     degree=np.radians(tetha)
     #define a the typical rotation matrix for a 2D space :)
-    Ro=(np.array([[np.cos(degree), -np.sin(degree)],[np.sin(degree),  np.cos(degree)]]))*1/m.sqrt(1/2)
-    pi_new=np.dot(R,pi)
-    pf_new=np.dot(R,pf)
-    return pi_new, pf_new
-
-def RT_135(pi,pf):
+    Ro=(np.array([[np.cos(degree), -np.sin(degree)],[np.sin(degree),  np.cos(degree)]]))*1/m.sqrt(2)
+    pi_new=np.dot(Ro,pi)
+    pf_new=np.dot(Ro,pf)
+    #new line
+    l1=np.array([pi_new,pf_new])
+    return l1
+def RT_135(l0):
     #135 degree rotation and scaling and translation combined
     tetha=135
     degree=np.radians(tetha)
     T=np.array([1,0])
     #define a the typical rotation matrix for a 2D space :)
-    Ro=(np.array([[np.cos(degree), -np.sin(degree)],[np.sin(degree),  np.cos(degree)]]))*1/m.sqrt(1/2)
-    pi_new=np.dot(R,pi)
-    pf_new=np.dot(R,pf)
-    return pi_new, pf_new
+    Ro=(np.array([[np.cos(degree), -np.sin(degree)],[np.sin(degree),  np.cos(degree)]]))*1/m.sqrt(2)
+    pi_new2=np.dot(Ro,pi)+T
+    pf_new2=np.dot(Ro,pf)+T
+    #we have line with 2 new endpoints
+    l2=np.array([pi_new2,pf_new2])
+    return l2
 
+#I should also think about lines as in we need two endpoints for knowing it excatly. so i should create another array to represent a line
+line0=np.array([pi,pf])
+#this is now 2x2 the column 0 are the x and the column 1 is the y as usual:)
+#the functions with get line0 and give back the two lines of step 1, then we should apply the functions on our new lines and go on
 
     
