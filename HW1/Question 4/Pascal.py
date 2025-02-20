@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 #we also notice that each row like i has i+1 positions for numbers
 # then n as the number of row is our arbitrary parameter
 #we also has two loops
-n=4
+n=64
 '''for i in range(n):
     #we need spacing from left, like a half empty square
     print((n-i)*" ", end=" ")
@@ -34,9 +34,15 @@ for i in range(n):
         number=m.factorial(i) // (m.factorial(j) * m.factorial(i - j))
         if number%2==1:
             #number is odd so it should get black(number 0)
-            pixel[i,2*j]=0
+            pixel[i,(n-i-1)+2*j]=0
             #consider the space between numbers too!
 #now lets plot
 plt.figure(figsize=(5, 5))
 plt.imshow(pixel, cmap='gray', interpolation='none')
 plt.show()
+'''
+#just checking
+a=np.ones((3,4))
+print(a)
+a[2,3]=0
+print(a)'''
