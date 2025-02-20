@@ -22,9 +22,7 @@ print(tr+T3)'''
 #another thing is that i need is a colored triangle to start with
 
 # I will use Polygan for it
-fig, ax = plt.subplots()
-colored_T= plt.Polygon(tr, color='blue')
-ax.add_patch(colored_T)
+
 plt.show()
 
 
@@ -34,16 +32,44 @@ plt.show()
 def scale(tr):
     #scale by half
     return tr/2
-def Transfer(l0):
+def Transfer(tr):
     #scaling
     #one direction transfer
     T=np.array([1/2,0])
     return tr/2 +T
-def Transfer2(l0):
+def Transfer2(tr):
     #scaling
     #one direction transfer
     T2=np.array([1/4,m.sqrt(3)/4])
-    return tr+T2
+    return tr/2+T2
+#now this part of the code will be very similar to dragon. I will basically do some recursives
+
+#no need for i because we do not want color change
+def fractal(tr, iteration,ax):
+    if iteration==0:
+        colored_T= plt.Polygon(tr, color='blue')
+        ax.add_patch(colored_T)
+        return
+
+    else:
+        #alright we have 3 fs to apply :)
+        tr1=scale(tr)
+        tr2=Transfer(tr)
+        tr3=Transfer2(tr)
+        #we have a triangle, we will do 3 transformations and we will end up in step 1 then we will repeat this for every 3 new triangles
+        #the iteration steps will clearly drop too :) just like dragon curve
+        f1=fractal(tr1,iteration-1,ax)
+        f2=fractal(tr2,iteration-1,ax)
+        f3=fractal(tr3,iteration-1,ax)
+        return
+    
+#attention we had to add ax to set the smaller triangles at the right place in our figure :)
+fig, ax = plt.subplots()
+fractal(tr,2,ax)
+plt.axis('equal')
+plt.show()
+
+
 
 
 
