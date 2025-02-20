@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 #we also notice that each row like i has i+1 positions for numbers
 # then n as the number of row is our arbitrary parameter
 #we also has two loops
-n=64
+n=128
 '''for i in range(n):
     #we need spacing from left, like a half empty square
     print((n-i)*" ", end=" ")
