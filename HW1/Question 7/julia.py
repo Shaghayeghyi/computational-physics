@@ -13,5 +13,22 @@ import math as m
 
 x=random.uniform(0,10)
 y=random.uniform(0,10)
-Ncomplex=complex(x,y)
+z=complex(x,y)
 print(Ncomplex)
+#boundary distance
+r=5
+
+N_iteration=[]
+#how many random numbers
+N_randoms=1000
+#Max iteration number of function
+Max=20
+
+def z_function(z):
+    c=complex(0,0.1)
+    f=z^2+c
+    return f
+
+#for all random numbers
+for i in range(N_randoms):
+    
