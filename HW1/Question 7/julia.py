@@ -11,10 +11,10 @@ import math as m
 #i want to create a random number between 0 and 10
 
 
-x=random.uniform(0,10)
+'''x=random.uniform(0,10)
 y=random.uniform(0,10)
 z=complex(x,y)
-print(Ncomplex)
+print(Ncomplex)'''
 #boundary distance
 r=5
 
@@ -26,9 +26,24 @@ Max=20
 
 def z_function(z):
     c=complex(0,0.1)
-    f=z^2+c
+    f=z**2+c
     return f
-
+#data is an array saving the final z and the number of iterations
+data=[]
 #for all random numbers
 for i in range(N_randoms):
+    x=random.uniform(0,10)
+    y=random.uniform(0,10)
+    z=complex(x,y)
+    #counter
+    l=0
+    #for all iterations
+    for j in range(Max):
+        if abs(z)<=r and j<=Max:
+            z=z_function(z)
+            l=l+1
+        point=np.array([z,l])
+        data.append(point)
+        #get back to the next number
+        continue
     
