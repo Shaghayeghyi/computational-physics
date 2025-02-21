@@ -22,10 +22,10 @@ N_iteration=[]
 #how many random numbers
 N_randoms=50000
 #Max iteration number of function
-Max=20
+Max=50
 
 def z_function(z):
-    c=complex(0,-1)
+    c=complex(-0.4,-0.6)
     f=z**2+c
     return f
 #data is an array saving the final z and the number of iterations
@@ -33,18 +33,17 @@ data=[]
 #for all random numbers
 for i in range(N_randoms):
     #to cover the whole parts of page
-    x=random.uniform(-5,5)
-    y=random.uniform(-5,5)
+    x=random.uniform(-3,3)
+    y=random.uniform(-3,3)
     z=complex(x,y)
     #counter
     l=0
     #for all iterations
-    for j in range(Max):
-        while abs(z)<=r and l<=Max:
-            z=z_function(z)
-            l=l+1
-        point=np.array([x,y,l])
-        data.append(point)
+    while abs(z)<=r and l<=Max:
+        z=z_function(z)
+        l=l+1
+    point=np.array([x,y,l])
+    data.append(point)
 data=np.array(data)
 '''#just checking
 print(data[:,1])'''
@@ -52,7 +51,7 @@ print(data[:,1])'''
 '''colors = plt.cm.viridis(np.linspace(0, 1, Max))
 print(colors)'''
 plt.figure(figsize=(8, 8))
-plt.scatter(data[:, 0], data[:, 1], c=data[:, 2], cmap='plasma',s=0.2)
+plt.scatter(data[:, 0], data[:, 1], c=data[:, 2], cmap='plasma',s=0.5)
 plt.show()
 
 
