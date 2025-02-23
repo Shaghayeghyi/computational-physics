@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 import math as m
+import matplotlib.cm as cm
 
 #for the julia set we need to work with complex numbers
 #we have a boundary with lenght r. we choose a random number
@@ -57,17 +58,16 @@ plt.show()'''
 
 N_randoms=50000
 #Max iteration number of function
-Max=50
-
+Max=100
 #for creating a better plot maybe i should work with the pixels instead of points.
 #i will have a plane in this limit (xi,xf) and (yi,yf)
-xi,xf=-10,10
-yi,yf=-10,10
-size=1000
-r=2
-N_pixelx=int((xf-xi)/size)
-N_pixely=int((yf-yi)/size)
-#each number is a pixel in my mind so at first i will create a 2D array 20x20
+xi,xf=-2,2
+yi,yf=-2,2
+size=500
+r=4
+N_pixelx=size
+N_pixely=size
+#each number is a pixel in my mind so at first i will create a 2D array sizexsize full of zeros
 initial_value=np.zeros((N_pixelx,N_pixely))
 def z_function(z):
     c=complex(-0.4,-0.6)
@@ -78,9 +78,9 @@ def z_function(z):
 for i in range(N_pixelx):
     for j in range(N_pixely):
         #the coordinate of each pixel
-        x_pixel=i*N_pixelx
-        y_pixel=j*N_pixely
-        z=complex(x,y)
+        x_pixel=i*(xf-xi)/N_pixelx+xi
+        y_pixel=j*(yf-yi)/N_pixely+yi
+        z=complex(x_pixel,y_pixel)
         #counter
         l=0
         #for all iterations
@@ -88,8 +88,8 @@ for i in range(N_pixelx):
             z=z_function(z)
             l=l+1
         initial_value[i,j]=l    
-plt.figure(figsize=(6, 6))
-plt.imshow(initial_value, cmap='inferno')
+plt.figure(figsize=(10, 10))
+plt.imshow(initial_value, cmap=cm.prism)
 plt.show()
 
 
