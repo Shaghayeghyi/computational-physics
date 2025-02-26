@@ -8,47 +8,35 @@ import random
 #the functions responsible for the leaf structure should be applied more often for instance
 #the process is the same as before and we need (x,y)
 #four funtions
-def f1(l0):
+def f1(p):
     #define a the typical rotation matrix for a 2D space :)
-    Ro=(np.array([[0.85, 0.4],[0.3,0]]))
-    pi_new=np.dot(Ro,l0[0])
-    pf_new=np.dot(Ro,l0[1])
-    #new line
-    l1=np.array([pi_new,pf_new])
-    T=np.array([1/2,0])
-    return l1+T
-def f2(l0):
+    Ro=(np.array([[0.85, 0.04],[-0.04,0.85]]))
+    T=np.array([0,1.6])
+    p_new=np.dot(Ro,p)+T
+    return p_new
+def f2(p):
     #define a the typical rotation matrix for a 2D space :)
-    Ro=(np.array([[0.3, 0.4],[0.3,0.4]]))
-    pi_new=np.dot(Ro,l0[0])
-    pf_new=np.dot(Ro,l0[1])
-    #new line
-    l1=np.array([pi_new,pf_new])
-    T=np.array([1/2,0])
-    return l1+T
-def f3(l0):
+    Ro=(np.array([[0.2, -.26],[0.23,0.22]]))
+    T=np.array([0,1.6])
+    p_new=np.dot(Ro,p)+T
+    return p_new
+def f3(p):
     #define a the typical rotation matrix for a 2D space :)
-    Ro=(np.array([[0.3, 0.4],[0.3,0.4]]))
-    pi_new=np.dot(Ro,l0[0])
-    pf_new=np.dot(Ro,l0[1])
-    #new line
-    l1=np.array([pi_new,pf_new])
-    T2=np.array([1/4,m.sqrt(3)/4])
-    return l1++T2
-def f4(l0):
-    Ro=(np.array([[0, 0.45],[0.3,0.4]]))
-    pi_new=np.dot(Ro,l0[0])
-    pf_new=np.dot(Ro,l0[1])
-    #new line
-    l1=np.array([pi_new,pf_new])
-    T2=np.array([1/4,m.sqrt(3)/4])
-    return l1+T2
+    Ro=(np.array([[0, 0],[0,.16]]))
+    T2=np.array([0,0])
+    p_new=np.dot(Ro,p)+T2
+    return p_new
+def f4(p):
+    Ro=(np.array([[-.15, 0.28],[0.26,0.24]]))
+    T2=np.array([0,0.44])
+    p_new=np.dot(Ro,p)+T2
+    return p_new
 #l is a pair (x,y)
-N_points=10000
+N_points=100000
 N_functions=50
 function=[f1,f2,f3,f4]
 #non uniform choosing method for functions
-Probability=[0.85,0.10,0.02,0.03]
+Probability=[0.85,0.07,0.01,0.07]
 #we also have to save all of our generated final points
 plotting_data=[]
 for i in range(N_points):
@@ -66,15 +54,6 @@ for i in range(N_points):
 plotting_data=np.array(plotting_data)
 plt.figure(figsize=(8, 8))
 plt.scatter(plotting_data[:, 0], plotting_data[:, 1],s=0.1,color='blue')
+plt.savefig("100000.jpg")
 plt.show()
-def R_45(l0):
-    #45 degree rotation and scaling combined
-    tetha=45
-    degree=np.radians(tetha)
-    #define a the typical rotation matrix for a 2D space :)
-    Ro=(np.array([[np.cos(degree), -np.sin(degree)],[np.sin(degree),  np.cos(degree)]]))*1/m.sqrt(2)
-    pi_new=np.dot(Ro,l0[0])
-    pf_new=np.dot(Ro,l0[1])
-    #new line
-    l1=np.array([pi_new,pf_new])
-    return l1
+
