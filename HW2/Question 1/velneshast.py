@@ -11,3 +11,16 @@ height=np.zeros(200)
 #we will also need a number of samples that will fall on the surface
 N_sample=20000
 
+#we need a for loop to go through every sample and find a place for it
+time_splitted_sample=[]
+for i in range(N_sample):
+    #the question wants us to split our deposition into 4 differen timelines
+    #so we will save each quarter of samples in a array
+    rand_house=r.randint(0,199)
+    #add a unit to the height of rand_house
+    height[rand_house]=height[rand_house]+1
+    
+    
+#print(x)
+plt.bar(x,height)
+plt.show()
