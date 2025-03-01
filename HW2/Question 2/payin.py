@@ -1,6 +1,7 @@
 import numpy as np
 import random as r
 import matplotlib.pyplot as plt
+from scipy.stats import linregress
 #now we will work with some interaction with neighbors
 #again we have a 1D surface
 '''x=np.arange(0,200,1)
@@ -107,19 +108,52 @@ def Simulation(N,L):
 
 Var_all = []
 
-for i in range(12):
-    sim = Simulation(400000,200)
+for i in range(2):
+    sim = Simulation(1000000,200)
     Var_all.append(sim[1])
 #averaging over all runs
 meaning=np.mean(Var_all, axis=0)
 #b,a= np.polyfit(np.log(time_snapshot), np.log(w), 1)
     
 t=sim[0]
+mean_w = np.mean(Var_all, axis=0)
+log_t = np.log(t)
+log_w = np.log(meaning)
+
+
+split_index = int(0.9 * len(log_t))  
+
+
+slope1, intercept1, _, _, _ = linregress(log_t[:split_index], log_w[:split_index])
+line1 = slope1 * log_t + intercept1
+
+slope2, intercept2, _, _, _ = linregress(log_t[split_index:], log_w[split_index:])
+line2 = slope2 * log_t + intercept2
+
+
+critical_log_t = (intercept2 - intercept1) / (slope1 - slope2)
+critical_log_w = slope1 * critical_log_t + intercept1
+
+critical_t = np.exp(critical_log_t)
+critical_w = np.exp(critical_log_w)
+
+# Plot results
+plt.scatter(log_t, log_w, marker='o', label="Data")
+plt.plot(log_t, line1, 'r--', label="Growth Phase Fit")
+plt.plot(log_t, line2, 'g--', label="Saturation Phase Fit")
+plt.scatter(critical_log_t, critical_log_w, color='black', marker='x', s=100, label="Critical Point")
+plt.xlabel("log t")
+plt.ylabel("log w")
+plt.title("Growth and Saturation Phases of Roughness (Fixed)")
+plt.legend()
+plt.show()
+
+'''critical_t, critical_w
 plt.scatter(np.log(t), np.log(meaning), marker='o')
 plt.title("w and t for 200000 samples")
 plt.xlabel("logt")
 plt.ylabel("logw")
-plt.show()
+plt.show()'''
             
 
 
