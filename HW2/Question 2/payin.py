@@ -51,8 +51,17 @@ L=200
 x_co=np.arange(0,L,1)
 h=np.zeros(L)
 #number of samples
-N=20000
-t_snap=[100,1000,10000,100000, N-1]
+N=4000000
+t_snap=[]
+n = 1
+#creating good time spacing like other reports:)
+while True:
+    tn = int(1000 * (1.2) ** n) 
+    if tn >= N:  
+        break
+    t_snap.append(tn)
+    n=n+1
+
 h_snapshot=[]
 #i will save the h in different times
 for i in range(N):
@@ -67,7 +76,7 @@ for i in range(N):
     #now lets see this belongs to which house!
     if h[r_house]==min_height:
         h[r_house]=h[r_house]+1
-    elif h[(r_house+1)%L]==h[(r_house-1)%L] and min_height==h[(r_house-1)%L]:
+    elif h[(r_house+1)%L]==h[(r_house-1)%L]==min_height:
         #choose randomly between them
         idx= r.choice([(r_house-1)%L, (r_house+1)%L]) 
         h[idx]=h[idx]+1
@@ -78,9 +87,29 @@ for i in range(N):
         
     
     #now lets save snap shots!
-    if i in t_snap:
+    if np.isin(i, t_snap):
         h_snapshot.append(h.copy())
 #print(h_snapshot)
+#now lets calculate the mean and var
+average_snap=[]
+for n in range(len(t_snap)):
+    #mean :)
+    avr=np.mean(h_snapshot[n])
+    average_snap.append(float(avr))
+#print(average_snap)
+#now for std
+w=[]
+for c in range(len(t_snap)):
+    var=np.sqrt(np.mean((h_snapshot[c])**2)-(np.mean(h_snapshot[c]))**2)
+    w.append(float(var))
+#print(w)
+#b,a= np.polyfit(np.log(time_snapshot), np.log(w), 1)
+plt.scatter(np.log(t_snap), np.log(w), marker='o')
+plt.title("w and t for 200000 samples")
+plt.xlabel("logt")
+plt.ylabel("logw")
+plt.show()
+               
 
 
 
