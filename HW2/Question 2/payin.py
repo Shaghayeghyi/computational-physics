@@ -44,72 +44,82 @@ plt.bar(x,height_snapshot[2]-height_snapshot[1], color='blue',alpha=0.6,bottom=(
 plt.bar(x,height_snapshot[3]-height_snapshot[2], color='red',alpha=0.6,bottom=(height_snapshot[2]))
 plt.title("deposition with 20000 samples")
 plt.show()'''
+#put it all in a function so we can call it for averaging
+def Simulation(N,L):
+    #now lets work on fits
+    #we stil have x and h according to arbitrary L=200
+    x_co=np.arange(0,L,1)
+    h=np.zeros(L)
+    #number of samples
+    t_snap=[]
+    n = 1
+    #creating good time spacing like other reports:)
+    while True:
+        tn = int(1000 * (1.2) ** n) 
+        if tn >= N:  
+            break
+        t_snap.append(tn)
+        n=n+1
 
-#now lets work on fits
-#we stil have x and h according to arbitrary L=200
-L=200
-x_co=np.arange(0,L,1)
-h=np.zeros(L)
-#number of samples
-N=4000000
-t_snap=[]
-n = 1
-#creating good time spacing like other reports:)
-while True:
-    tn = int(1000 * (1.2) ** n) 
-    if tn >= N:  
-        break
-    t_snap.append(tn)
-    n=n+1
+    h_snapshot=[]
+    #i will save the h in different times
 
-h_snapshot=[]
-#i will save the h in different times
-for i in range(N):
-    #choose a house
-    r_house=r.randint(0,L-1)
-    #check the neighbors
-    #we have 200 houses, the house at 0 and 200 should be neighbours. for this we have to link 0 and 199 with a periodic boundary.
-    #module cam do this for us easily because it has affect on the two end houses naturally
-    #print(-1%200) is 199 wich is corrrect!
-    #for 199=> 200%200 is 0 which is correct again :)
-    min_height=min(h[r_house],h[(r_house+1)%L],h[(r_house-1)%L])
-    #now lets see this belongs to which house!
-    if h[r_house]==min_height:
-        h[r_house]=h[r_house]+1
-    elif h[(r_house+1)%L]==h[(r_house-1)%L]==min_height:
-        #choose randomly between them
-        idx= r.choice([(r_house-1)%L, (r_house+1)%L]) 
-        h[idx]=h[idx]+1
-    elif h[(r_house-1)%L]==min_height:
-        h[(r_house-1)%L]=h[(r_house-1)%L]+1
-    else:
-        h[(r_house+1)%L]=h[(r_house+1)%L]+1
+    for i in range(N):
+        #choose a house
+        r_house=r.randint(0,L-1)
+        #check the neighbors
+        #we have 200 houses, the house at 0 and 200 should be neighbours. for this we have to link 0 and 199 with a periodic boundary.
+        #module cam do this for us easily because it has affect on the two end houses naturally
+        #print(-1%200) is 199 wich is corrrect!
+        #for 199=> 200%200 is 0 which is correct again :)
+        min_height=min(h[r_house],h[(r_house+1)%L],h[(r_house-1)%L])
+        #now lets see this belongs to which house!
+        if h[r_house]==min_height:
+            h[r_house]=h[r_house]+1
+        elif h[(r_house+1)%L]==h[(r_house-1)%L]==min_height:
+            #choose randomly between them
+            idx= r.choice([(r_house-1)%L, (r_house+1)%L]) 
+            h[idx]=h[idx]+1
+        elif h[(r_house-1)%L]==min_height:
+            h[(r_house-1)%L]=h[(r_house-1)%L]+1
+        else:
+            h[(r_house+1)%L]=h[(r_house+1)%L]+1
+            
         
-    
-    #now lets save snap shots!
-    if np.isin(i, t_snap):
-        h_snapshot.append(h.copy())
-#print(h_snapshot)
-#now lets calculate the mean and var
-average_snap=[]
-for n in range(len(t_snap)):
-    #mean :)
-    avr=np.mean(h_snapshot[n])
-    average_snap.append(float(avr))
-#print(average_snap)
-#now for std
-w=[]
-for c in range(len(t_snap)):
-    var=np.sqrt(np.mean((h_snapshot[c])**2)-(np.mean(h_snapshot[c]))**2)
-    w.append(float(var))
-#print(w)
+        #now lets save snap shots!
+        if np.isin(i, t_snap):
+            h_snapshot.append(h.copy())
+    #print(h_snapshot)
+    #now lets calculate the mean and var
+    average_snap=[]
+    for n in range(len(t_snap)):
+        #mean :)
+        avr=np.mean(h_snapshot[n])
+        average_snap.append(float(avr))
+    #print(average_snap)
+    #now for std
+    w=[]
+    for c in range(len(t_snap)):
+        var=np.sqrt(np.mean((h_snapshot[c])**2)-(np.mean(h_snapshot[c]))**2)
+        w.append(float(var))
+    return t_snap, w
+#we should take average of multiple runs!
+
+Var_all = []
+
+for i in range(12):
+    sim = Simulation(400000,200)
+    Var_all.append(sim[1])
+#averaging over all runs
+meaning=np.mean(Var_all, axis=0)
 #b,a= np.polyfit(np.log(time_snapshot), np.log(w), 1)
-plt.scatter(np.log(t_snap), np.log(w), marker='o')
+    
+t=sim[0]
+plt.scatter(np.log(t), np.log(meaning), marker='o')
 plt.title("w and t for 200000 samples")
 plt.xlabel("logt")
 plt.ylabel("logw")
 plt.show()
-               
-
+            
 
 
