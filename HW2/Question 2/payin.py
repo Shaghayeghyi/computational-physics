@@ -31,7 +31,7 @@ for i in range(N_samples):
     elif height[(rand_house-1)%200]==minimum_height:
         height[(rand_house-1)%200]=height[(rand_house-1)%200]+1
     else:
-        height[(rand_house+1)%200]=height[(rand_house+1)%200]+1
+        height[(rand_house+1)%200]=height[(rand_house+1)%==200]+1
         
     
     #now lets save snap shots!
@@ -52,15 +52,17 @@ def Simulation(N,L):
     x_co=np.arange(0,L,1)
     h=np.zeros(L)
     #number of samples
-    t_snap=[]
-    n = 1
-    #creating good time spacing like other reports:)
+    ''' #creating good time spacing like other reports:)
     while True:
         tn = int(1000 * (1.2) ** n) 
         if tn >= N:  
             break
         t_snap.append(tn)
-        n=n+1
+        n=n+1'''
+    #more efficient version
+    #how many time ranges you want?
+    stop=35
+    t_snap=np.array([N/(1.2**n) for n in range(stop,-1,-1)],int)
 
     h_snapshot=[]
     #i will save the h in different times
@@ -73,40 +75,42 @@ def Simulation(N,L):
         #module cam do this for us easily because it has affect on the two end houses naturally
         #print(-1%200) is 199 wich is corrrect!
         #for 199=> 200%200 is 0 which is correct again :)
-        min_height=min(h[r_house],h[(r_house+1)%L],h[(r_house-1)%L])
+        #more efficient no need for % for the last one
+        min_height=min(h[r_house],h[(r_house+1)%L],h[(r_house-1)])
         #now lets see this belongs to which house!
         if h[r_house]==min_height:
-            h[r_house]=h[r_house]+1
-        elif h[(r_house+1)%L]==h[(r_house-1)%L]==min_height:
+            h[r_house]+=1
+        elif h[(r_house+1)%L]==h[(r_house-1)%L]:
             #choose randomly between them
             idx= r.choice([(r_house-1)%L, (r_house+1)%L]) 
-            h[idx]=h[idx]+1
+            h[idx]+=1
         elif h[(r_house-1)%L]==min_height:
-            h[(r_house-1)%L]=h[(r_house-1)%L]+1
+            h[(r_house-1)%L]+=1
         else:
-            h[(r_house+1)%L]=h[(r_house+1)%L]+1
+            h[(r_house+1)%L]+=1
             
         
         #now lets save snap shots!
-        if np.isin(i, t_snap):
+        if i in t_snap:
             h_snapshot.append(h.copy())
     #print(h_snapshot)
     #now lets calculate the mean and var
     average_snap=[]
+    w=[]
     for n in range(len(t_snap)):
         #mean :)
-        avr=np.mean(h_snapshot[n])
-        average_snap.append(float(avr))
-    #print(average_snap)
-    #now for std
-    w=[]
-    for c in range(len(t_snap)):
-        var=np.sqrt(np.mean((h_snapshot[c])**2)-(np.mean(h_snapshot[c]))**2)
-        w.append(float(var))
-    return t_snap, w
-#we should take average of multiple runs!
+        average_snap.append(np.mean(h_snapshot[n]))
+        #more efficient var
+        w.append(np.sqrt(np.var(h_snapshot[n])))
 
-Var_all = []
+    
+    
+        
+    return t_snap, w, average_snap
+#okay now lets test out code for w and
+print(Simulation(40000,200))
+
+'''Var_all = []
 
 for i in range(2):
     sim = Simulation(1000000,200)
@@ -119,9 +123,9 @@ t=sim[0]
 mean_w = np.mean(Var_all, axis=0)
 log_t = np.log(t)
 log_w = np.log(meaning)
+'''
 
-
-split_index = int(0.9 * len(log_t))  
+'''split_index = int(0.9 * len(log_t))  
 
 
 slope1, intercept1, _, _, _ = linregress(log_t[:split_index], log_w[:split_index])
@@ -148,7 +152,7 @@ plt.title("Growth and Saturation Phases of Roughness (Fixed)")
 plt.legend()
 plt.show()
 
-'''critical_t, critical_w
+critical_t, critical_w
 plt.scatter(np.log(t), np.log(meaning), marker='o')
 plt.title("w and t for 200000 samples")
 plt.xlabel("logt")
