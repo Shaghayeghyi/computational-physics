@@ -36,18 +36,12 @@ for i in range (N_samples):
         abs_h[room_idx]+=1
         #change the the number 0 to color
         height_plane[max_h+1,room_idx]=color
-    if abs_h[(room_idx+1)%L]==max_h:
-        abs_h[room_idx]+=1
     elif abs_h[(room_idx+1)%L]==max_h:
         #the absolute height of room_idx will be equal to right
-        abs_h[room_idx]=abs_h[(room_idx+1)%L]
-        height_plane[max_h,room_idx]
         abs_h[room_idx]=max_h
         height_plane[max_h,room_idx]=color
     elif abs_h[(room_idx-1)%L]==max_h:
         #the absolute height of room_idx will be equal to left
-        abs_h[room_idx]=abs_h[(room_idx-1)%L]
-        height_plane[max_h,room_idx]
         abs_h[room_idx]=max_h
         height_plane[max_h ,room_idx]=color
     #we also need to change the color every now and then in the visualization!
