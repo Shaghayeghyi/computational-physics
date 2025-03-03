@@ -13,31 +13,36 @@ x=np.arange(0,L,1)
 #we need to detect the empty rooms beneath
 N_samples=20000
 #we need to see the empty space between the filled points right now so we will devide the plane in a 2D array of x rooms and maximum height possible
-height_plane=np.zeros((N_samples,L))
+height_plane=np.zeros((2000,L), dtype=int)
 #we also need another definition of height without caring about the empty spaces. just the height!
-abs_h=np.zeros(0,L)
-height_snapshot=[]
-time_snapshot=[int(N_samples/4),2*int(N_samples/4),3*int(N_samples/4),N_samples-1]
+abs_h=np.zeros(L)
+h_snapshot=[]
+t_snapshot=[int(N_samples/4),2*int(N_samples/4),3*int(N_samples/4),N_samples-1]
 color=100
 
 for i in range (N_samples):
     #for each falling particle we choose a room(x)
     room_idx=r.randint(0,L-1)
-    max_h=max(abs_h[room_idx],abs_h[(room_idx+1)%L],abs_h[(room_idx-1)%L])
+    max_h= int(max(abs_h[room_idx],abs_h[(room_idx+1)%L],abs_h[(room_idx-1)%L]))
     if i in t_snapshot:
             h_snapshot.append(abs_h.copy())
     if abs_h[room_idx]==max_h:
-        abs_h[room_idx]+=1
         #change the the number 0 to color
         height_plane[max_h+1,room_idx]=color
-    if abs_h[(room_idx+1)%L]==max_h:
+        abs_h[room_idx]+=1
+    elif abs_h[(room_idx+1)%L]==max_h:
         #the absolute height of room_idx will be equal to right
-        abs_h[room_idx]=abs_h[(room_idx+1)%L]
-        height_plane[max_h,room_idx]
+        abs_h[room_idx]=max_h
+        height_plane[max_h,room_idx]=color
     elif abs_h[(room_idx-1)%L]==max_h:
         #the absolute height of room_idx will be equal to left
-        abs_h[room_idx]=abs_h[(room_idx-1)%L]
-        height_plane[max_h,room_idx]
+        abs_h[room_idx]=max_h
+        height_plane[max_h ,room_idx]=color
     #we also need to change the color every now and then in the visualization!
     if i%5000==0:
         color=-color
+fig, ax = plt.subplots(figsize=(5, 5))
+im = ax.imshow(height_plane, cmap="coolwarm", aspect="auto", origin="lower")
+ax.set_ylim(0, 250)
+plt.title("visualization for near deposition with 20000 smaples")
+plt.show()
