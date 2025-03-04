@@ -8,24 +8,23 @@ from scipy.stats import linregress
 #if the height of the r_house is the max itself then it will be added by one!
 L=200
 x=np.arange(0,L,1)
+stop=35
 #we also need a time_snap to save the dynamic after a certain amount of time
 #visiualization is a bit different from finding w and mean
 #we need to detect the empty rooms beneath
-N_samples=20000
+N_samples=200000
 #we need to see the empty space between the filled points right now so we will devide the plane in a 2D array of x rooms and maximum height possible
-height_plane=np.zeros((N_samples,L))
-height_plane=np.zeros((2000,L), dtype=int)
+height_plane=np.zeros((20000,L), dtype=int)
 height_snapshot=[]
-time_snapshot=[int(N_samples/4),2*int(N_samples/4),3*int(N_samples/4),N_samples-1]
+t_snapshot=np.array([5,10,20,30,40,50,60,70],int)
 hp_snapshot=[]
-t_snapshot=[int(N_samples/4),2*int(N_samples/4),3*int(N_samples/4),N_samples-1]
 color=100
 #okay i need to change the initial condition
 #all the rooms except the middle one have a very low value and it take a lot of time for them to grow
 #so we have a main root
 abs_h = np.full(L, -1000, dtype=int)
 
-abs_h[100] = 0
+abs_h[100] = 100
 #this is the base for creating a tree
 
 
@@ -35,7 +34,7 @@ for i in range (N_samples):
     max_h=int(max(abs_h[room_idx],abs_h[(room_idx+1)%L],abs_h[(room_idx-1)%L]))
     if i in t_snapshot:
         #now i want a copy of the plane for looking at the width
-            hp_snapshot.append(height_plane.copy())
+            hp_snapshot.append(abs_h.copy())
     if abs_h[room_idx]==max_h:
         abs_h[room_idx]+=1
         #change the the number 0 to color
@@ -48,31 +47,42 @@ for i in range (N_samples):
         #the absolute height of room_idx will be equal to left
         abs_h[room_idx]=max_h
         height_plane[max_h ,room_idx]=color
-    
-'''fig, ax = plt.subplots(figsize=(5, 5))
+    #we also need to change the color every now and then in the visualization!
+    if i%5000==0:
+        color=-color
+fig, ax = plt.subplots(figsize=(5, 5))
 im = ax.imshow(height_plane, cmap="coolwarm")
 ax.set_ylim(0, 250)
 ax.set_xlim(0,200)
 plt.title(" Tree with 20000 samples and L=200")
-plt.show()'''
-'''#we also need to change the color every now and then in the visualization!
-    if i%5000==0:
-        color=-color'''
+plt.show()
+
 #now we want to find the most left and the most right house in each time shot
 #we want to plot width with respect to time and look for scales. so an log log plot would be good!
 #just checking my snapshot
 #print(sum(hp_snapshot[3]))
 #now for each snapshot i need to calculate the width
 #distance is meaningful through columns
-non_zero_coor=[]
-for i in hp_snapshot:
-    time_hp=i
-    print(i)
-    print(i[200])
-    #this is a 2000xL array at each time stamp
-    '''for row in len(time_hp[0]}:
-        find_nonzero_in_row=np.'''
-        
+#I can work with abs height
+#i will start from the first column and go through columns with the help of abs_h
+distance_at_t=[]
+for i in t_snapshot:
+    #find the distance in each time
+    x_start=0
+    while abs_h[x_start]<=0:
+        x_start+=1
+    #now we have reached the first colored column
+    #the very last column must start from x_start and start moving till we reach the next not_colored part
+    x_finish=x_start
+    while abs_h[x_finish]>=0:
+        x_finish+=1
+        if x_finish==L-1:
+            #we do not want to go on after the end of system
+            break
+    distance_at_t.append(x_finish-x_start)
+print(distance_at_t)
+
+
     
     
 
