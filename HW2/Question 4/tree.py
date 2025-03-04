@@ -17,7 +17,7 @@ height_plane=np.zeros((N_samples,L))
 height_plane=np.zeros((2000,L), dtype=int)
 height_snapshot=[]
 time_snapshot=[int(N_samples/4),2*int(N_samples/4),3*int(N_samples/4),N_samples-1]
-h_snapshot=[]
+hp_snapshot=[]
 t_snapshot=[int(N_samples/4),2*int(N_samples/4),3*int(N_samples/4),N_samples-1]
 color=100
 #okay i need to change the initial condition
@@ -32,10 +32,10 @@ abs_h[100] = 0
 for i in range (N_samples):
     #for each falling particle we choose a room(x)
     room_idx=r.randint(0,L-1)
-    max_h=max(abs_h[room_idx],abs_h[(room_idx+1)%L],abs_h[(room_idx-1)%L])
-    max_h= int(max(abs_h[room_idx],abs_h[(room_idx+1)%L],abs_h[(room_idx-1)%L]))
+    max_h=int(max(abs_h[room_idx],abs_h[(room_idx+1)%L],abs_h[(room_idx-1)%L]))
     if i in t_snapshot:
-            h_snapshot.append(abs_h.copy())
+        #now i want a copy of the plane for looking at the width
+            hp_snapshot.append(height_plane.copy())
     if abs_h[room_idx]==max_h:
         abs_h[room_idx]+=1
         #change the the number 0 to color
@@ -48,11 +48,32 @@ for i in range (N_samples):
         #the absolute height of room_idx will be equal to left
         abs_h[room_idx]=max_h
         height_plane[max_h ,room_idx]=color
-    #we also need to change the color every now and then in the visualization!
-    if i%5000==0:
-        color=-color
-fig, ax = plt.subplots(figsize=(5, 5))
+    
+'''fig, ax = plt.subplots(figsize=(5, 5))
 im = ax.imshow(height_plane, cmap="coolwarm")
 ax.set_ylim(0, 250)
+ax.set_xlim(0,200)
 plt.title(" Tree with 20000 samples and L=200")
-plt.show()
+plt.show()'''
+'''#we also need to change the color every now and then in the visualization!
+    if i%5000==0:
+        color=-color'''
+#now we want to find the most left and the most right house in each time shot
+#we want to plot width with respect to time and look for scales. so an log log plot would be good!
+#just checking my snapshot
+#print(sum(hp_snapshot[3]))
+#now for each snapshot i need to calculate the width
+#distance is meaningful through columns
+non_zero_coor=[]
+for i in hp_snapshot:
+    time_hp=i
+    print(i)
+    print(i[200])
+    #this is a 2000xL array at each time stamp
+    '''for row in len(time_hp[0]}:
+        find_nonzero_in_row=np.'''
+        
+    
+    
+
+
