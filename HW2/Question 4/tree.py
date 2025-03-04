@@ -2,7 +2,7 @@ import numpy as np
 import random as r
 import matplotlib.pyplot as plt
 from scipy.stats import linregress
-#now we want to change the deposition manner
+'''#now we want to change the deposition manner
 #the falling smaple will still look at left and right in a periodic manner
 #it will detect hte maximum height and it will sit on its own x cordinate but at a height of (max(h(left)),max(h(right)))-height(rand_house)
 #if the height of the r_house is the max itself then it will be added by one!
@@ -33,7 +33,7 @@ for i in range (N_samples):
     room_idx=r.randint(0,L-1)
     max_h=int(max(abs_h[room_idx],abs_h[(room_idx+1)%L],abs_h[(room_idx-1)%L]))
     if i in t_snapshot:
-        #now i want a copy of the plane for looking at the width
+        #now i want a copy of the height for looking at the width
             hp_snapshot.append(abs_h.copy())
     if abs_h[room_idx]==max_h:
         abs_h[room_idx]+=1
@@ -80,7 +80,77 @@ for i in t_snapshot:
             #we do not want to go on after the end of system
             break
     distance_at_t.append(x_finish-x_start)
-print(distance_at_t)
+print(distance_at_t)'''
+
+#okay here is the  code for width I am sorry about the mess:) most parts are just repeated
+import numpy as np
+import random as r
+import matplotlib.pyplot as plt
+from scipy.stats import linregress
+
+# System size
+L = 200
+N_samples = 200000
+hp_snapshot = []
+# Initialization: Tree starts with -1000 everywhere except the center
+abs_h = np.full(L, -1000, dtype=int)
+abs_h[100] =100  # The root of the tree
+#print(abs_h)
+# Time snapshots (to analyze growth over time)
+stop=30
+t_snapshot = np.array([20000/(1.2**n) for n in range(stop,0,-1)],int)
+
+# Deposition process
+for i in range (N_samples):
+        #for each falling particle we choose a room(x)
+        room_idx=r.randint(0,L-1)
+        max_h=int(max(abs_h[room_idx],abs_h[(room_idx+1)%L],abs_h[(room_idx-1)%L]))
+        #print(max_h)
+    
+        if i in t_snapshot:
+                hp_snapshot.append(abs_h.copy())
+                #print(hp_snapshot)
+        if abs_h[room_idx]==max_h:
+            #change the the number 0 to color
+            #height_plane[max_h+1,room_idx]=color
+            abs_h[room_idx]+=1
+        else:
+            abs_h[room_idx]=max_h
+            
+# Calculate width of the tree at different time snapshots
+distance_at_t=[]
+for h in hp_snapshot:
+    #print("this is abs h at time",i)
+    #print(abs_h)
+    #find the distance in each time
+    x_start=0
+    while h[x_start]<0:
+        x_start+=1
+        #print(x_start,"this is x start")
+    #now we have reached the first colored column
+    #the very last column must start from x_start and start moving till we reach the next not_colored part
+    x_finish=x_start
+    while x_finish < L-1 and h[x_finish] > 0:
+        x_finish += 1
+    distance_at_t.append(x_finish-x_start)
+#print(distance_at_t)
+#okay now we plot log log
+log_t = np.log(t_snapshot)
+log_w = np.log(distance_at_t)
+
+slope, intercept, _, _, _= linregress(log_t, log_w)
+line_fit=slope * log_t + intercept
+plt.figure(figsize=(5, 5))
+plt.scatter(log_t, log_w)
+plt.plot(log_t,line_fit ,'r')
+plt.xlabel("log t")
+plt.ylabel("log w")
+plt.title("Plot of Width")
+plt.show()
+
+print(f"slope is: {slope:}")
+
+
 
 
     
