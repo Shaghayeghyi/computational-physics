@@ -3,27 +3,49 @@ import matplotlib.pyplot as plt
 import random as r
 #we will define the surface at first
 N_samples=2000
-L = 200
+L = 100
 x = np.arange(0,L,1)
 #we can have a 2D array too
-height_map = np.zeros((grid_height, width))
+height_map = np.zeros((2000, L))
 #we need to save the height
 height = np.zeros(L)
 #now lets go through samples
+'''deg=np.radians(45)
+horizantal_shift=np.round(np.sin(deg))
+vertical_shift=np.round(np.cos(deg))
+print(horizantal_shift,vertical_shift)'''
+not_collide=False
 for i in range(N_samples):
     #choose a house initially
     r_house= r.randint(0, L - 1)
-    
-    for j in range(r_house):
+    #so my system starts at the left neighbor, goes aroung and reches the right neighbor
+    moving_sys = [(r_house - k) % L for k in range(1, L)]
+
+    for j in moving_sys:
         #check every house on the left
         #assume the particle falls leftward
         #we must check the height of every single room at the left of the index
-        #i also assume that the angle is 45 degree so i move diagonal 
-   
+        #i also assume that the angle is 45 degree so i move diagonal
+        #i want to be careful about negatives in periodic boundaries
+        horizontal_d = min(abs(r_house - j), L - abs(r_house - j))
+        #for simplicity i assume that if the height(r_house) itself is the max, the particle lands there
+        #if it doesn't it must collide with a column of its left
+        #the h where the sample falls from
+        h=1000
+        if h<height[j]+horizontal_d:
+            #this is a pattern that i saw
+            height[j]+=1
+            not_collide==True
+            #the collision with column j happened we are out
+            break
+        else:
+            continue
+            #move to the next column and check collision
+            
+print(height) 
 
-
-
-plt.bar(x , height)
+plt.figure(figsize=(10, 5))
+plt.bar(x , height,width=1)
 plt.xlabel('Position')
 plt.ylabel('Height')
 plt.show()
