@@ -47,7 +47,7 @@ plt.title("deposition with 20000 samples")
 plt.show()'''
 
 
-#put it all in a function so we can call it for averaging
+'''#put it all in a function so we can call it for averaging
 def Simulation(N,L):
     #now lets work on fits
     #we stil have x and h according to arbitrary L=200
@@ -110,7 +110,7 @@ j=25
 for k in range(j):
     wk,meank=Simulation(4000000,400)
     print(k)
-    all_data.append(wk)
+    all_data.append(wk)'''
     
 '''print("data 1")
 t_shot, W1, av1=Simulation(4000000,200)
@@ -122,7 +122,9 @@ print("data 4")
 t_shot, W4, av4=Simulation(4000000,200)
 #now we have 4 data set we just need to average them and plot to lines for them
 all_data = np.array([W1, W2, W3, W4])'''
-stop=45
+
+
+'''stop=45
 t_shot=np.array([4000000/(1.2**n) for n in range(stop,0,-1)],int)
 # Compute the average across all datasets
 average_W = np.mean(all_data, axis=0)
@@ -155,7 +157,22 @@ plt.plot(log_t[split_index:], line2[split_index:], 'g--', label="Saturation Phas
 plt.xlabel("log t")
 plt.ylabel("log w")
 plt.legend()
-plt.show()
+plt.show()'''
 
+lenght=[200,300,350,400]
+beta=[0.25,0.22,0.25,0.26]
+lenght=np.array(lenght)
+logL=np.log(lenght)
+
+lnws=[0.91 ,1.14, 1.17 ,1.15]
+lnws=np.array(lnws)
+print("mean of beta is:",np.mean(beta))
+slope, intercept, _, _, _ = linregress(logL, lnws)
+plt.scatter(logL, lnws)
+plt.plot(logL,slope*logL+intercept)
+plt.xlabel("log L")
+plt.ylabel("log ws")
+plt.show()
+print("alpha is",slope)
 
 
