@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random as r
 #we will define the surface at first
-N_samples=2000
-L = 100
+N_samples=2000000
+L = 200
 x = np.arange(0,L,1)
 #we can have a 2D array too
 height_map = np.zeros((2000, L))
@@ -14,7 +14,7 @@ height = np.zeros(L)
 horizantal_shift=np.round(np.sin(deg))
 vertical_shift=np.round(np.cos(deg))
 print(horizantal_shift,vertical_shift)'''
-not_collide=False
+collide=False
 for i in range(N_samples):
     #choose a house initially
     r_house= r.randint(0, L - 1)
@@ -31,21 +31,23 @@ for i in range(N_samples):
         #for simplicity i assume that if the height(r_house) itself is the max, the particle lands there
         #if it doesn't it must collide with a column of its left
         #the h where the sample falls from
-        h=1000
-        if h<height[j]+horizontal_d:
+        height1=1000
+        if height1<height[j]+horizontal_d:
             #this is a pattern that i saw
             height[j]+=1
-            not_collide==True
+            collide=True
             #the collision with column j happened we are out
             break
         else:
             continue
             #move to the next column and check collision
-            
+        if not collide:
+            height[r_house] += 1 
 print(height) 
 
 plt.figure(figsize=(10, 5))
 plt.bar(x , height,width=1)
 plt.xlabel('Position')
+
 plt.ylabel('Height')
 plt.show()
