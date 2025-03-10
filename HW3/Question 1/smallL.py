@@ -16,15 +16,14 @@ def random_on(L,p):
                 Lattice[i,j]=0
     return Lattice
             
-plt.imshow(random_on(5,0.5), cmap='Greys')
-plt.show()
+
 #for seeing whether the percolation happend or not, we will start from on sites and the left
 #for each one we will look at the top, down and right neighbor for a path
 #after visiting each site, we will marke it to not go through that again
 #by moving to right and reaching the very right column with number one, we will assume that the percolation happened
 
 def find_path(Lattice):
-    L=5
+    L=10
     p=0.5
     left_column=Lattice[:,0]
     #not seen sites are zero
@@ -63,11 +62,14 @@ for i , j in array:
 i,j=array.pop()
 print(i,j)
 print(array)'''
-if find_path(random_on(5,0.5))==1:
+LL=random_on(10,0.5)
+print(LL)
+if find_path(LL)==1:
     print("we had percolation")
 else:
     print("we had no percolation!")
     
- 
+plt.imshow(LL, cmap='Greys')
+plt.show()
                     
             
