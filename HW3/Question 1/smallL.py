@@ -28,8 +28,32 @@ def find_path(Lattice):
     p=0.5
     left_column=random_on(L,p)[:,0]
     #not seen sites are zero
-    paths=np.zeros((L, L), dtype=int)
+    paths_seen=np.zeros((L, L), dtype=int)
+    #start from the 1s on the first columns and add every neighbor with 1
+    paths=[]
     for i in range(L):
-        for j in range(L):
-            
+        if left_column[i]==1:
+            paths.append((i,0))
+            paths_seen[i,0]=1 #seen!
+
     
+    #up, down, right
+    for (m,n) in paths:
+        #look at each one's neighbors and save the new 1s
+        #mark them as seen
+        if Lattice[m,n+1]==1:
+            paths.remove((m, n))  
+            paths.append((m,n+1))
+        if Lattice[m-1,n]==1:
+            paths.remove((m,n))  
+            paths.append((m-1,n+1))
+        if Lattice[m+1,n]==1:
+            paths.remove((m,n))  
+            paths.append((m+1,n+1))
+        
+    
+    
+    
+    
+                    
+            
