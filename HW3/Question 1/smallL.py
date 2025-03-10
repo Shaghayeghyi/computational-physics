@@ -16,17 +16,17 @@ def random_on(L,p):
                 Lattice[i,j]=0
     return Lattice
             
-'''plt.imshow(random_on(2,0.5))
-plt.show()'''
+plt.imshow(random_on(5,0.5), cmap='Greys')
+plt.show()
 #for seeing whether the percolation happend or not, we will start from on sites and the left
 #for each one we will look at the top, down and right neighbor for a path
 #after visiting each site, we will marke it to not go through that again
 #by moving to right and reaching the very right column with number one, we will assume that the percolation happened
 
 def find_path(Lattice):
-    L=3
+    L=5
     p=0.5
-    left_column=random_on(L,p)[:,0]
+    left_column=Lattice[:,0]
     #not seen sites are zero
     paths_seen=np.zeros((L, L), dtype=int)
     #start from the 1s on the first columns and add every neighbor with 1
@@ -36,24 +36,38 @@ def find_path(Lattice):
             paths.append((i,0))
             paths_seen[i,0]=1 #seen!
 
-    
-    #up, down, right
-    for (m,n) in paths:
-        #look at each one's neighbors and save the new 1s
-        #mark them as seen
-        if Lattice[m,n+1]==1:
-            paths.remove((m, n))  
-            paths.append((m,n+1))
-        if Lattice[m-1,n]==1:
-            paths.remove((m,n))  
-            paths.append((m-1,n+1))
-        if Lattice[m+1,n]==1:
-            paths.remove((m,n))  
-            paths.append((m+1,n+1))
+    null=[]
+    while paths!=null:
+        #get rid of the last added site and work on its neighbors
+            i,j = paths.pop()
+
+            #percolation
+            if j == L - 1:
+                return 1
+
+
+            neighbors = [(i, j + 1), (i - 1, j), (i + 1, j)]
+            
+            for m, n in neighbors:
+                #the last condition helps us to not go back to checked paths
+                if 0 <= m < L and 0 <= n < L and Lattice[m, n] == 1 and paths_seen[m,n]==0:
+                    paths.append((m, n))
+                    paths_seen[m,n]=1
+                    
+    return 0
         
+#just checking
+'''array=[(1,2),(6,7),(10,15)]
+for i , j in array:
+    print(i,j)
+i,j=array.pop()
+print(i,j)
+print(array)'''
+if find_path(random_on(5,0.5))==1:
+    print("we had percolation")
+else:
+    print("we had no percolation!")
     
-    
-    
-    
+ 
                     
             
