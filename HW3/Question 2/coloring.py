@@ -40,11 +40,15 @@ def lattice(L,p):
                         for l in range(1,L+1):
                             if plane[l,k]==max_color:
                                 plane[l,k]=min_color
+    #Check for percolation
+    percolation = 1 in plane[:, -2]
                         
             
-    return plane
+    return plane ,percolation
 
-image=lattice(10,0.4)
-print(image)
-plt.imshow(image, cmap='nipy_spectral')
+image,percolation=lattice(10,0.65)
+#print(image[:,:-1])
+print(percolation)
+plt.imshow(image[:,:-1], cmap='nipy_spectral')
+plt.title(f"this is for L={10} and p={0.65}")
 plt.show()
