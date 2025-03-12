@@ -7,34 +7,44 @@ from random import random,randint
 def lattice(L,p):
     color=2
     #create 2D array with all zeros at first
-    plane=np.zeros((L,L))
+    plane=np.zeros((L+2,L+2))
     #give number 1 to the left column
     left_column=plane[:,0]=1
     int_max=100
-    right_column[:,L-1]=int_max
+    right_column=plane[:,-1]=int_max
     #now lets check every house
-    for i in range(1,L-1):
-        for j in range(1,L-1):
-            random_p=random.random()
+    for j in range(1,L+1):
+        for i in range(1,L+1):
+            random_p=random()
+            #print(random_p)
             if random_p<p:
                 plane[i,j]=color
-                color=color+1
+                color+=1
                 #so we have a different color for the other houses
-                #up down right
-            neighbors=[(i-1,j),(i+1,j),(i,j+1)]
-            #we want the non zero neighbors
-            for m,n in neighbors:
-                non_zero_neighbors=[]
-                if plane[m,n]!=0:
-                    non_zero_neighbors.append((m,n))
-            '''if len(non_zero_neighbors)==0:
-                 #no non zero neighbors'''
-                
-            if len(non_zero_neighbors)==1:
-                lattice[non_zero_neighbors[0]]=plane[i,j]
-            elif len(non_zero_neighbors)==2:
-                min_housex, min_housey =min(plane[non_zero_neighbor[0]],plane[non_zero_neighbor[0]])
-                plane[i,j]=plane[min_housex, min_housey]
-                
+                #up down right left
+                top_n=plane[i-1,j]
+                left_n=plane[i,j-1]
+                if top_n==0 and left_n==0:
+                    #plane[i,j]=color
+                    #color+=1
+                    continue
+                elif top_n!=0 and left_n==0:
+                    plane[i,j]=top_n
+                elif top_n==0 and left_n!=0:
+                    plane[i,j]=left_n
+                else:
+                    min_color=min(top_n,left_n)
+                    max_color=max(top_n,left_n)
+                    plane[i,j]=min_color
+                    for k in range(1,L+1):
+                        for l in range(1,L+1):
+                            if plane[l,k]==max_color:
+                                plane[l,k]=min_color
+                        
             
-            
+    return plane
+
+image=lattice(10,0.4)
+print(image)
+plt.imshow(image, cmap='nipy_spectral')
+plt.show()
