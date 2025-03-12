@@ -6,8 +6,8 @@ from random import random,randint
 #we need an array so save the size of clusters
 #we need a plane LxL
 #we should create a function that leads us to the root:)
-L=10
-p=0.3
+L=100
+p=0.4
 
 def Plane(L,p):
     plane = np.zeros((L+2,L+2),dtype = int)#L+2 for side's column
@@ -28,12 +28,16 @@ def Plane(L,p):
 def HK(plane):
     grid,count=plane
     #grid=grid[1:-1,1:-1]
+    #print("hello")
+    #print(grid)
     n_rows, n_columns = grid.shape
     L=n_rows-2
     #create a grid to put the labels insdie according to grid
     label_grid = np.zeros((n_rows, n_columns), dtype=int)
+    label_grid[:,0]=1
+    label_grid[:,-1]=100
     label_counter=1
-    labels = np.zeros(count+2,dtype=int)
+    labels = np.arange(count+2,dtype=int)
     #i should also add an array to save the size of clusters
     cluster_size = np.zeros(L * L)
     
@@ -79,13 +83,14 @@ def HK(plane):
                     cluster_size[find_root(top_n,labels)] += 1
                     
 
-                else:
+                elif top_n!=0 and left_n!=0:
                     #compare labels
                     root_L=find_root(left_n,labels)
                     root_T=find_root(top_n,labels)
                     label_grid[i - 1][j] = root_T
                     label_grid[i,j - 1] = root_L
                     label_grid[i,j] = root_L
+                    
                     if root_L==root_T:
                         cluster_size[root_L] +=1
                     
@@ -97,19 +102,33 @@ def HK(plane):
                         labels[root_T] = root_L
                         
                         
-                 
    
-        
+    for j in range(1,L+1): 
+        for i in range(1,L+1):
+            label_grid[i, j] = find_root(label_grid[i, j],labels)
             
-    return label_grid, cluster_size
+    return label_grid, cluster_size, labels
                     
                     
-im,cluster_s=HK(Plane(10,0.5))                   
+im,cluster_s,label=HK(Plane(100,0.4))   
+
+def if_percolation(im):
+    first_column=im[:,1]
+    last_column=im[:,-2]
+    #print(last_column)
+    for i in last_column:
+        for j in first_column:
+            if i==j and i!=0:
+                return 1
+    return 0
+
 print(im)
-plt.imshow(im)   
+#print(im[:-1,:-1])
+plt.imshow(im[:-1,:-1])  
+print(f'did we have percolation?{if_percolation(im)}')
+plt.title(f"this is for L={L} and p={p}")
 plt.show()
 print(cluster_s)
-    
 
                     
                     
