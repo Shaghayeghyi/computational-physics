@@ -24,15 +24,27 @@ def Plane(L,p):
 print(Plane(10,0.5))
 
 
-def HK(grid,count):
+def HK(plane):
     grid,count=plane
     n_rows, n_columns = grid.shape
     #create a grid to put the labels insdie according to grid
     label_grid = np.zeros((n_rows, n_columns), dtype=int)
     label_counter=0
     labels = np.arange(count+1)
+
+    
+    def find_root(label,array):
+        if label == array[label]:
+            return label
+        else:
+            array[label] = find_roots(array[label],array)
+            return array[label]
+
+
+    
     for j in range(1,n_columns):
         for i in range(n_rows):
+            
             #look for on sites
             if grid[i,j]!=0:
                 #look for its left and top neighbor
@@ -43,20 +55,28 @@ def HK(grid,count):
                     #new cluster
                     label_grid[i,j]=label_counter+1
                     label_counter+=1
+                    
                 elif top_n==0 and left_n!=0:
-                    label_grid[i,j]=find_root(left_n)
+                    label_grid[i,j]=find_root(left_n,labels)
+                    
 
                 elif top_n!=0 and left_n==0:
-                    label_grid[i,j]=find_root(top_n)
+                    label_grid[i,j]=find_root(top_n,labels)
+                    
 
                 else:
-                    root_L=find_root(left_n)
-                    root_T=find_root(top_n)
-                    grid[i,j]=min(root_L,root_T)
-                    union(left,top)
+                    root_L=find_root(left_n,labels)
+                    root_T=find_root(top_n,labels
+                                     )
+                    min_label=min(root_L,root_T)
+                    max_label=max(root_L,root_T)
+                    label_grid[i,j]=min_label
+                    labels[max_label]=min_label
+    return label_grid
                     
                     
-
+                    
+print(HK(Plane(10,0.5)))
     
 
     
