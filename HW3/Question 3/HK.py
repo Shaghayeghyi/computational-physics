@@ -10,37 +10,57 @@ L=10
 p=0.3
 
 def Plane(L,p):
-    plane = np.zeros((L,L+2),dtype = int)#L+2 for side's column
+    plane = np.zeros((L,L+1),dtype = int)#L+2 for side's column
     plane[:,0]=1
-    plane[:,-1]=100
     count=0
-    k=3
-    for j in range(1,L):
-        for i in range(1,L):
+    for j in range(1,L-1):
+        for i in range(1,L-1):
             random_p=random()
             if random_p<p:
                 plane[i,j]=1
-            #if the site is on
-            if plane[i,j]!=0:
-                left_n=plane[i,j-1]
-                top_n=plane[i-1,j]
-                #if none of them are on
+                count=count+1
+    return plane,count
+
+print(Plane(10,0.5))
+
+
+def HK(grid,count):
+    grid,count=plane
+    n_rows, n_columns = grid.shape
+    #create a grid to put the labels insdie according to grid
+    label_grid = np.zeros((n_rows, n_columns), dtype=int)
+    label_counter=0
+    labels = np.arange(count+1)
+    for j in range(1,n_columns):
+        for i in range(n_rows):
+            #look for on sites
+            if grid[i,j]!=0:
+                #look for its left and top neighbor
+                top_n=grid[i-1,j]
+                left_n=grid[i,j-1]
+                #now we have three ways
                 if top_n==0 and left_n==0:
-                    #we need a new number
-                    plane[i,j]=k
-                    #the size of cluster with number k increases
-                    cluster_size[k]=1
-                    k=k+1
-                if top_n!=0 and left_n==0:
-                    plane[i,j]=top_n
-                    cluster_size[top_n]+=1
-                if top_n==0 and left_n!=0:
-                    plane[i,j]=left_n
-                    cluster_size[left_n]+=1
+                    #new cluster
+                    label_grid[i,j]=label_counter+1
+                    label_counter+=1
+                elif top_n==0 and left_n!=0:
+                    label_grid[i,j]=find_root(left_n)
+
+                elif top_n!=0 and left_n==0:
+                    label_grid[i,j]=find_root(top_n)
+
                 else:
-                    label=max(top_n, left_n)
-                    plane[i,j]=label
+                    root_L=find_root(left_n)
+                    root_T=find_root(top_n)
+                    grid[i,j]=min(root_L,root_T)
+                    union(left,top)
                     
+                    
+
+    
+
+    
+
                     
                     
                     
