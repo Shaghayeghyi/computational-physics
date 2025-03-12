@@ -32,9 +32,10 @@ def HK(plane):
     L=n_rows-2
     #create a grid to put the labels insdie according to grid
     label_grid = np.zeros((n_rows, n_columns), dtype=int)
-    label_counter=0
+    label_counter=1
     labels = np.zeros(count+2,dtype=int)
-
+    #i should also add an array to save the size of clusters
+    cluster_size = np.zeros(L * L)
     
     def find_root(label,array):
         if label == labels[label]:
@@ -49,27 +50,33 @@ def HK(plane):
             #we look at a square grid and don't get out of bound
             #look for on sites
             if grid[i,j]!=0:
+                
                 #look for its left and top neighbor
                 top_n=label_grid[i-1,j]
                 left_n=label_grid[i,j-1]
                 #now we have three ways
+                
                 if top_n==0 and left_n==0:
                     #new cluster
-                    label_counter+=1
+                    
                     label_grid[i,j]=label_counter
                     labels[label_counter] = label_counter
+                    cluster_size[label_counter] += 1
+                    label_counter+=1
                     
                     
                 elif top_n==0 and left_n!=0:
                     #link both to root
                     label_grid[i,j-1]=find_root(left_n,labels)
                     label_grid[i,j]=find_root(left_n,labels)
+                    cluster_size[find_root(left_n,labels)] += 1
                     
 
                 elif top_n!=0 and left_n==0:
                     #link both to root
                     label_grid[i-1,j]=find_root(top_n,labels)
                     label_grid[i,j]=find_root(top_n,labels)
+                    cluster_size[find_root(top_n,labels)] += 1
                     
 
                 else:
@@ -79,25 +86,29 @@ def HK(plane):
                     label_grid[i - 1][j] = root_T
                     label_grid[i,j - 1] = root_L
                     label_grid[i,j] = root_L
+                    if root_L==root_T:
+                        cluster_size[root_L] +=1
                     
                     if root_L != root_T:
                         #unite roots
+                        #join two clusters and ignore the top one
+                        cluster_size[root_L] = cluster_size[root_L] + cluster_size[root_T] + 1
+                        cluster_size[root_T]=0
                         labels[root_T] = root_L
                         
+                        
                  
-    for j in range(1,L+1): 
-        for i in range(1,L+1):
-            label_grid[i, j] = find_root(label_grid[i, j],labels)
+   
         
             
-    return label_grid
+    return label_grid, cluster_size
                     
                     
-im=HK(Plane(10,0.5))                   
+im,cluster_s=HK(Plane(10,0.5))                   
 print(im)
 plt.imshow(im)   
 plt.show()
-
+print(cluster_s)
     
 
                     
