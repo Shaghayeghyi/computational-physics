@@ -126,24 +126,27 @@ print(cluster_s)'''
 
 #now i want to use HK algorithm to work on the probability of percolation
 array= []
-averag= []
-p_range = np.arange(0,1.05, 0.05)
-for p in p_range:
-    #run this 100 time for each p
-    #this is for L=10
-    
-    for i in range(100):
-        sample_grid,_,_=HK(Plane(10,p))
-        array.append(if_percolation(sample_grid))  
-    averag.append(np.average(array))
-    array = []
-    
-plt.plot(p_range,averag,  label='this is L = 10')
-plt.xlabel("probability")
-plt.ylabel("Q")
-plt.legend()
-plt.show()
 
+p_range = np.arange(0,1.05, 0.05)
+L_range=[10,20,40,80,160]
+
+for L in L_range:
+    averag= []
+    for p in p_range:
+        #run this 100 time for each p
+        #this is for L=10
+        
+        for i in range(100):
+            sample_grid,_,_=HK(Plane(L,p))
+            array.append(if_percolation(sample_grid))  
+        averag.append(np.average(array))
+        array = []    
+    plt.plot(p_range,averag,  label= f"this is for L = {L}")
+    plt.xlabel("probability")
+    plt.ylabel("Q")
+    plt.legend()
+
+plt.show()
                     
                     
                     
