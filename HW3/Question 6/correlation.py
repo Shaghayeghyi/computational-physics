@@ -41,7 +41,7 @@ def HK(plane):
         clusterL_position[i]=[]
     
     def find_root(label,array):
-        if label == labels[label]:
+        if label == array[label]:
             return label
         else:
             array[label] = find_root(array[label],array)
@@ -112,8 +112,8 @@ def HK(plane):
     return label_grid, cluster_size, labels , clusterL_position
                     
                     
-im,cluster_s,label, clusterP, cluster_cor=HK(Plane(10,0.4)) 
-print(clusterP)
+#im,cluster_s,label, clusterP=HK(Plane(10,0.4)) 
+#print(clusterP)
 
 def if_percolation(im,cluster_cor):
     first_column=im[:,1]
@@ -143,30 +143,70 @@ for label, coor in dict.items():
     print(C_M)
     print(label, coor)'''
 
-#now i want to use HK algorithm to work on the Q_inf
-def gyration_r():
+
+'''def gyration_r(cluster_cor):
     Rg_all=[]
-    percolation, cluster_cor=if_percolation(im, cluster_cor)
+    Weights=[]
     #look at each cluster separately
     for label, coor in cluster_cor.items():
         #size
         S=len(coor)
+        if S==0:
+            continue
         #center of mass
         C_M= np.mean(coor, axis=0)
-        Rg=np.sum((np.array(coor) - C_M) ** 2) / S
+        Rg=np.sum((np.array(coor)- C_M)**2)/S
         Rg_all.append(np.sqrt(Rg))
+        Weights.append(S)
+        #print("wights",Weights)
 
-    return Rg_all
+    return np.average(Rg_all)'''
+def gyration_r(cluster_cor,L):
+    Rg_all=[]
+    
+    #Weights = [] 
+    #look at each cluster separately
+    for label, coor in cluster_cor.items():  # Number of points in this cluster
+        #print(label, "this is label")
+        #print("damn")
+        #print(coor)
+        #size
+        S=len(coor)
+        #print("len coor", S)
+        if  S <=1:
+            continue
+        #print(f"this is our coordiante for label={label}", coor)
+            
+        C_M_x, C_M_y = np.mean(coor, axis=0)
+        #print("these are cm_x y", C_M_x, C_M_y)
         
+        SumR=0
+
+        # Iterate through all cluster points
+        for i in range(S):
+            x, y = coor[i]
+            SumR += (x**2 - C_M_x**2) + (y**2 - C_M_y**2)
+            
+
         
+        Rg = (SumR) / S  
+        Rg_all.append(np.sqrt(Rg))
+        #print(Rg_all)
+        #Weights.append(S)
+    Rg_mean=np.mean(Rg_all)
+    if np.isnan(Rg_mean):
+        return 0
+        
+   
+    return Rg_mean 
     
 
 
 
-'''array= []
+array= []
 
 p_range = np.arange(0,1.05, 0.05)
-L_range=[10,20,40,80,160]
+L_range=[160]
 
 for L in L_range:
     averag= []
@@ -175,24 +215,17 @@ for L in L_range:
         #this is for L=10
         
         for i in range(100):
-            sample_grid,cluster,_=HK(Plane(L,p))
-            if if_percolation(sample_grid)==1:
-                Q=max(cluster)
-                
-                array.append(Q)
-            else:
-                array.append(0)
-        averag.append(np.average(array)/(L*L))
-        array = []    
+            sample_grid,cluster,_, cluster_co=HK(Plane(L,p))
+            percolation, cluster_no_inf_coor=if_percolation(sample_grid, cluster_co)
+            array.append(gyration_r(cluster_no_inf_coor,L))
+            #array[np.isnan(array)] = 0
+        averag.append(np.average(array))
+        
+        array = []   
+             
     plt.plot(p_range,averag,  label= f"this is for L = {L}")
     plt.xlabel("probability")
-    plt.ylabel("Q_inf")
+    plt.ylabel("ksi")
     plt.legend()
 
-plt.show()'''
-
-    
-                    
-                    
-                    
-            
+plt.show()
