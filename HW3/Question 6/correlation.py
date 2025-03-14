@@ -112,28 +112,57 @@ def HK(plane):
     return label_grid, cluster_size, labels , clusterL_position
                     
                     
-im,cluster_s,label, clusterP=HK(Plane(10,0.4)) 
+im,cluster_s,label, clusterP, cluster_cor=HK(Plane(10,0.4)) 
 print(clusterP)
 
-def if_percolation(im):
+def if_percolation(im,cluster_cor):
     first_column=im[:,1]
     last_column=im[:,-2]
     #print(last_column)
     for i in last_column:
         for j in first_column:
             if i==j and i!=0:
-                return 1
-    return 0
+                #i dont want the inf cluster
+                del cluster_cor[i] 
+                return 1 ,cluster_cor
+    return 0, cluster_cor
 
-#print(im)
+'''#print(im)
 #print(im[:-1,:-1])
 plt.imshow(im[:-1,:-1])  
 print(f'did we have percolation?{if_percolation(im)}')
 #plt.title(f"this is for L={L} and p={p}")
 plt.show()
-print(cluster_s)
+print(cluster_s)'''
+
+'''
+#just checking
+dict={1:[(2,3)], 2:[(5,6),(4,10)]}
+for label, coor in dict.items():
+    C_M= np.mean(coor, axis=0)
+    print(C_M)
+    print(label, coor)'''
 
 #now i want to use HK algorithm to work on the Q_inf
+def gyration_r():
+    Rg_all=[]
+    percolation, cluster_cor=if_percolation(im, cluster_cor)
+    #look at each cluster separately
+    for label, coor in cluster_cor.items():
+        #size
+        S=len(coor)
+        #center of mass
+        C_M= np.mean(coor, axis=0)
+        Rg=np.sum((np.array(coor) - C_M) ** 2) / S
+        Rg_all.append(np.sqrt(Rg))
+
+    return Rg_all
+        
+        
+    
+
+
+
 '''array= []
 
 p_range = np.arange(0,1.05, 0.05)
