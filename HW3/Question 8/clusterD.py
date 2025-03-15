@@ -5,7 +5,7 @@ L=100
 p=0.6
 #we will start by a plane and a seed in the middle
 #-1 means off and not visited
-def clusterD(L,p)
+def clusterD(L,p):
     #at first everything is unvisited
     plane = np.full((L+2,L+2),-2,dtype = int)
     #boundary
@@ -40,8 +40,26 @@ def clusterD(L,p)
                 neighbors.append((row, col + 1))
             if plane[row, col - 1] == -2:
                 neighbors.append((row, col - 1))
+        #now we need to check which one is blokced and which one is turned on and is in the new focus for us
+        neighbors = np.unique(neighbors, axis=0)
+        new_active_set=[]
+
+        for i,j in neighbors:
+            random_p=random()
+            if random_p<p:
+                plane[i,j]=1
+                new_active_set.append((i,j))
+            else:
+                #block it
+                plane[i,j]=0
+        #so now we have the current actives
+        current_active=new_active_set
+        #add this to the turned on sites
+        all_actives_list.extend(new_active_set)
 
             
-
+    #print(all_actives_list)
+    plt.imshow(plane, cmap='Grays')
     plt.show()
-
+clusterD(L,p)
+    
