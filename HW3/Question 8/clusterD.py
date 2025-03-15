@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from random import random,randint
 L=100
-p=0.6
+p=0.5
 #we will start by a plane and a seed in the middle
 #-1 means off and not visited
 def clusterD(L,p):
@@ -19,7 +19,7 @@ def clusterD(L,p):
     activation=(middle,middle)
     plane[middle,middle]=1
     #the size of cluster is 1 now
-    cluster_size=1
+    #cluster_size=1
 
     current_active=[activation]
     null=[]
@@ -56,10 +56,33 @@ def clusterD(L,p):
         current_active=new_active_set
         #add this to the turned on sites
         all_actives_list.extend(new_active_set)
-
-            
+    sum_coorx=0
+    sum_coory=0
+    cluster_size=len(all_actives_list)
+    differencex=[]
+    differencey=[]
+    for x,y in all_actives_list:
+        sum_coorx=sum_coorx+x
+        sum_coory=sum_coory+y
+    CM_x=sum_coorx/cluster_size
+    CM_y=sum_coory/cluster_size
+    for xx , yy in all_actives_list:
+        difx=xx**2-CM_x**2
+        dify=yy**2-CM_y**2
+        differencex.append(difx)
+        differencey.append(dify)
+    differencex=np.sum(differencex)/cluster_size
+    differencey=np.sum(differencey)/cluster_size
+    Rg=np.sqrt(differencex+differencey)
+        
+        
+        
     #print(all_actives_list)
     plt.imshow(plane, cmap='Grays')
     plt.show()
+    return all_actives_list ,Rg, cluster_size
 clusterD(L,p)
+
+        
+
     
