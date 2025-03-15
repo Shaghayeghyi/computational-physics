@@ -78,11 +78,44 @@ def clusterD(L,p):
         
         
     #print(all_actives_list)
-    plt.imshow(plane, cmap='Grays')
-    plt.show()
+    #plt.imshow(plane, cmap='Grays')
+    #plt.show()
     return all_actives_list ,Rg, cluster_size
 clusterD(L,p)
+p_range=[0.5,0.55,0.59]
+Ksi=[]
+Size=[]
+for p in p_range:
+    average_S=[]
+    average_ksi=[]
+    for m in range(100):
+        _,rg,size=clusterD(100,p)
+        average_S.append(size)
+        average_ksi.append(rg)
+    Ksi.append(np.mean(average_ksi))
+    Size.append(np.mean(average_S))
+       
+#print(Ksi)
+#print(Size)
+log_Size = np.log(Size)
+log_Ksi = np.log(Ksi)
 
+#fit
+a, b = np.polyfit(log_Ksi, log_Size, 1)
+
+# Generate fitted line
+log_S_fit = a* log_Ksi + b
+
+# Plot the data and the best-fit line
+plt.figure(figsize=(8,6))
+plt.scatter(log_Ksi, log_Size, label='Data')
+plt.plot(log_Ksi, log_S_fit, linestyle='--', label='fit')
+plt.xlabel("log(ksi)")
+plt.ylabel("log(S)")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
+print(f"Slope is:{a}")
         
-
-    
