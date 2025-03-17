@@ -30,18 +30,20 @@ def HK(plane):
     label_grid = np.zeros((n_rows, n_columns), dtype=int)
     label_grid[:,0]=1
     label_grid[:,-1]=100
-    label_counter=1
+    label_counter=2
     labels = np.arange(count+2,dtype=int)
     #i should also add an array to save the size of clusters
     cluster_size = np.zeros(L * L)
-    
     def find_root(label,array):
-        if label == labels[label]:
-            return label
+        if label == array[label]:
+            return array[label]
         else:
             array[label] = find_root(array[label],array)
             return array[label]
-
+    
+    #now for saving the position of the sites with the same label, i need a dictionary
+    
+    
     
     for j in range(1,L+1):
         for i in range(1,L+1):
@@ -60,13 +62,16 @@ def HK(plane):
                     label_grid[i,j]=label_counter
                     labels[label_counter] = label_counter
                     cluster_size[label_counter] += 1
+                   
                     label_counter+=1
                     
                     
                 elif top_n==0 and left_n!=0:
                     #link both to root
-                    label_grid[i,j-1]=find_root(left_n,labels)
+                    
+                    #label_grid[i,j-1]=find_root(left_n,labels)
                     label_grid[i,j]=find_root(left_n,labels)
+                    
                     cluster_size[find_root(left_n,labels)] += 1
                     
 
@@ -74,6 +79,7 @@ def HK(plane):
                     #link both to root
                     label_grid[i-1,j]=find_root(top_n,labels)
                     label_grid[i,j]=find_root(top_n,labels)
+                    
                     cluster_size[find_root(top_n,labels)] += 1
                     
 
@@ -83,7 +89,10 @@ def HK(plane):
                     root_T=find_root(top_n,labels)
                     label_grid[i - 1][j] = root_T
                     label_grid[i,j - 1] = root_L
-                    label_grid[i,j] = root_L
+                    min_r=min(root_L,root_T)
+                    max_r=max(root_L,root_T)
+                    
+                    label_grid[i,j] = min_r
                     
                     if root_L==root_T:
                         cluster_size[root_L] +=1
@@ -91,9 +100,10 @@ def HK(plane):
                     if root_L != root_T:
                         #unite roots
                         #join two clusters and ignore the top one
-                        cluster_size[root_L] = cluster_size[root_L] + cluster_size[root_T] + 1
-                        cluster_size[root_T]=0
-                        labels[root_T] = root_L
+                        cluster_size[min_r] = cluster_size[min_r] + cluster_size[max_r] + 1
+                        cluster_size[max_r]=0
+                        labels[labels == max_r] = min_r
+                        
                         
                         
    
@@ -104,7 +114,7 @@ def HK(plane):
     return label_grid, cluster_size, labels
                     
                     
-im,cluster_s,label=HK(Plane(100,0.4))   
+#im,cluster_s,label, clusterP=HK(Plane(100,0.4))   
 
 def if_percolation(im):
     first_column=im[:,1]
