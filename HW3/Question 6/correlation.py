@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from random import random,randint
+from scipy.optimize import curve_fit
+
 #we need the pervoius functions
 
 def Plane(L,p):
@@ -237,6 +239,43 @@ for L in L_range:
 plt.show()
 
 
+'''
+def Length(pcl, D, pcinf, nu):
+
+    return (D * np.abs(pcl - pcinf)) ** (-nu)
+
+# Data
+L = np.array([10, 20, 40, 80, 160])  
+pcl = np.array([0.517, 0.555, 0.572, 0.578, 0.580]) 
+
+# Initial guesses 
+p0 = (1, 0.6, 1.5)
+
+
+bounds = ([0, max(pcl)+0.015, 1.4], [np.inf, 1, 2]) 
+
+
+
+
+params, covariance = curve_fit(Length, pcl, L, p0=p0, bounds = bounds, maxfev=8000)
+D, pcinf, nu = params
+print("Optimized D:", D)
+print("Optimized pcinf:", pcinf)
+print("Optimized nu:", nu)
+
+    
+L_fitted = Length(pcl, D, pcinf, nu)
+
+
+plt.figure(figsize=(8, 5))
+plt.scatter(pcl, L, label="Data")
+plt.plot(pcl, L_fitted, color='red',label="Fit")
+plt.xlabel("pcl")
+plt.ylabel("L")
+plt.legend()
+plt.show()
+print("pcl:",pcl)
+print('L',L)'''
 
 
 
