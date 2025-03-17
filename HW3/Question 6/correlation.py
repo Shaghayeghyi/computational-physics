@@ -277,6 +277,22 @@ plt.show()
 print("pcl:",pcl)
 print('L',L)'''
 
+'''
+pcinf=0.595
+log_pcl_pcinf=np.log(np.abs(pcl-pcinf))
+log_L=np.log(L)
+plt.scatter(log_L,log_pcl_pcinf)
+plt.xlabel("logL")
+plt.ylabel("log(pcl-pcinf)")
+m  , b = np.polyfit (log_L ,log_pcl_pcinf , 1)
+line=m*log_L+b
+plt.plot(log_L, line)
+
+plt.show()
+
+m'''
+
+
 
 
 
