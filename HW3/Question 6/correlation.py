@@ -18,7 +18,6 @@ def Plane(L,p):
 #the plane is correct
 #print(Plane(10,0.5))
 
-
 def HK(plane):
     grid,count=plane
     #grid=grid[1:-1,1:-1]
@@ -30,23 +29,23 @@ def HK(plane):
     label_grid = np.zeros((n_rows, n_columns), dtype=int)
     label_grid[:,0]=1
     label_grid[:,-1]=100
-    label_counter=1
+    label_counter=2
     labels = np.arange(count+2,dtype=int)
     #i should also add an array to save the size of clusters
     cluster_size = np.zeros(L * L)
+    def find_root(label,array):
+        if label == array[label]:
+            return array[label]
+        else:
+            array[label] = find_root(array[label],array)
+            return array[label]
     
     #now for saving the position of the sites with the same label, i need a dictionary
     clusterL_position={}
     for i in range(count+2):
         clusterL_position[i]=[]
     
-    def find_root(label,array):
-        if label == array[label]:
-            return label
-        else:
-            array[label] = find_root(array[label],array)
-            return array[label]
-
+    
     
     for j in range(1,L+1):
         for i in range(1,L+1):
@@ -71,6 +70,7 @@ def HK(plane):
                     
                 elif top_n==0 and left_n!=0:
                     #link both to root
+                    
                     label_grid[i,j-1]=find_root(left_n,labels)
                     label_grid[i,j]=find_root(left_n,labels)
                     clusterL_position[find_root(left_n,labels)].append((i,j))
@@ -91,17 +91,22 @@ def HK(plane):
                     root_T=find_root(top_n,labels)
                     label_grid[i - 1][j] = root_T
                     label_grid[i,j - 1] = root_L
-                    label_grid[i,j] = root_L
-                    clusterL_position[find_root(left_n,labels)].append((i,j))
+                    min_r=min(root_L,root_T)
+                    max_r=max(root_L,root_T)
+                    
+                    label_grid[i,j] = min_r
+                    clusterL_position[min_r].append((i,j))
                     if root_L==root_T:
                         cluster_size[root_L] +=1
                     
                     if root_L != root_T:
                         #unite roots
                         #join two clusters and ignore the top one
-                        cluster_size[root_L] = cluster_size[root_L] + cluster_size[root_T] + 1
-                        cluster_size[root_T]=0
-                        labels[root_T] = root_L
+                        cluster_size[min_r] = cluster_size[min_r] + cluster_size[max_r] + 1
+                        cluster_size[max_r]=0
+                        labels[labels == max_r] = min_r
+                        clusterL_position[min_r].extend(clusterL_position[max_r])
+                        clusterL_position[max_r] = []
                         
                         
    
@@ -112,7 +117,7 @@ def HK(plane):
     return label_grid, cluster_size, labels , clusterL_position
                     
                     
-#im,cluster_s,label, clusterP=HK(Plane(10,0.4)) 
+im, cluster_s ,label, clusterP=HK(Plane(10,0.4)) 
 #print(clusterP)
 
 def if_percolation(im,cluster_cor):
@@ -123,46 +128,47 @@ def if_percolation(im,cluster_cor):
         for j in first_column:
             if i==j and i!=0:
                 #i dont want the inf cluster
-                del cluster_cor[i] 
+                cluster_cor[i]=[]
                 return 1 ,cluster_cor
+    
+    
     return 0, cluster_cor
 
-'''#print(im)
+
+
+#now i will take the second biggest cluster and its positions and calculate the RG
+'''def find_biggest_key(cluster_cor):
+    
+    biggest_label = 0
+    biggest_count = 0  
+    for key, coor in cluster_cor.items(): 
+        count = len(coor) 
+        if count > biggest_count: 
+            biggest_count = count 
+            biggest_label = key 
+
+    return cluster_cor[biggest_label] if cluster_cor else 0
+
+print(im)
+print("this is cluster_coordiante", clusterP)
 #print(im[:-1,:-1])
-plt.imshow(im[:-1,:-1])  
-print(f'did we have percolation?{if_percolation(im)}')
+print("hi")
+print(if_percolation(im,clusterP))
+#plt.imshow(im[:-1,:-1])  
+#print(f'did we have percolation?{if_percolation(im)}')
 #plt.title(f"this is for L={L} and p={p}")
 plt.show()
-print(cluster_s)'''
-
-'''
-#just checking
-dict={1:[(2,3)], 2:[(5,6),(4,10)]}
-for label, coor in dict.items():
-    C_M= np.mean(coor, axis=0)
-    print(C_M)
-    print(label, coor)'''
+print(cluster_s)
+did, cluster_cord=if_percolation(im, clusterP)
+print("second biggest cluster")
+print(find_biggest_key(cluster_cord))'''
 
 
-'''def gyration_r(cluster_cor):
+
+def gyration_r(cluster_cor):
     Rg_all=[]
-    Weights=[]
-    #look at each cluster separately
-    for label, coor in cluster_cor.items():
-        #size
-        S=len(coor)
-        if S==0:
-            continue
-        #center of mass
-        C_M= np.mean(coor, axis=0)
-        Rg=np.sum((np.array(coor)- C_M)**2)/S
-        Rg_all.append(np.sqrt(Rg))
-        Weights.append(S)
-        #print("wights",Weights)
-
-    return np.average(Rg_all)'''
-def gyration_r(cluster_cor,L):
-    Rg_all=[]
+    total_weight = 0
+    weighted_sum = 0
     
     #Weights = [] 
     #look at each cluster separately
@@ -173,7 +179,7 @@ def gyration_r(cluster_cor,L):
         #size
         S=len(coor)
         #print("len coor", S)
-        if  S <=1:
+        if  S==0:
             continue
         #print(f"this is our coordiante for label={label}", coor)
             
@@ -185,31 +191,31 @@ def gyration_r(cluster_cor,L):
         # Iterate through all cluster points
         for i in range(S):
             x, y = coor[i]
-            SumR += (x**2 - C_M_x**2) + (y**2 - C_M_y**2)
+            SumR += (x**2 - C_M_x**2)+ (y**2 - C_M_y**2)
             
 
         
-        Rg = (SumR) / S  
+        Rg = (SumR) / S
         Rg_all.append(np.sqrt(Rg))
         #print(Rg_all)
         #Weights.append(S)
-    Rg_mean=np.mean(Rg_all)
-    if np.isnan(Rg_mean):
-        return 0
+        weighted_sum += Rg * S  
+        total_weight += S 
+
         
    
-    return Rg_mean 
+    return weighted_sum/total_weight if Rg_all else 0
     
 
 
 
-array= []
 
 p_range = np.arange(0,1.05, 0.05)
-L_range=[160]
+L_range=[10,20,40,80,160]
 
 for L in L_range:
     averag= []
+    
     for p in p_range:
         #run this 100 time for each p
         #this is for L=10
@@ -217,11 +223,11 @@ for L in L_range:
         for i in range(100):
             sample_grid,cluster,_, cluster_co=HK(Plane(L,p))
             percolation, cluster_no_inf_coor=if_percolation(sample_grid, cluster_co)
-            array.append(gyration_r(cluster_no_inf_coor,L))
+            array.append(gyration_r(cluster_no_inf_coor))
             #array[np.isnan(array)] = 0
         averag.append(np.average(array))
-        
-        array = []   
+        array = []  
+         
              
     plt.plot(p_range,averag,  label= f"this is for L = {L}")
     plt.xlabel("probability")
@@ -229,3 +235,14 @@ for L in L_range:
     plt.legend()
 
 plt.show()
+
+
+
+
+
+
+
+
+
+
+
