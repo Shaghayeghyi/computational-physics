@@ -13,7 +13,7 @@ def random_walk(P):
     positions.append(start_point)
     position_copy=[]
     iteration=100
-    for i in range(iteration):
+    for i in range(iteration+1):
         rand = random()
         #right and left
         if rand < p:
@@ -21,57 +21,66 @@ def random_walk(P):
         else:
             current_position=current_position-1
             
-        positions.append(current_position)
+            
+        
         if i%10==0: #make a copy
-            position_copy.append(positions.copy())
+            position_copy.append(current_position)
              
-    averag=[]
-    Std=[]
-    for j in range(len(position_copy)):
-        averag.append(np.mean(position_copy[j]))
-        Std.append(np.std(position_copy[j]))
     
-    return averag, Std
+    return position_copy
 #average and Std of position
 
 #lets run this code for 100 times
 
-run=10000
+run=100000
 run_av=[]
 run_st=[]
 
 for k in range(run):
-    P=0.2
-    averag, Std=random_walk(P)
-    run_av.append(averag)
-    run_st.append(Std)
+    P=0.5
+    current=random_walk(P)
+    #print(averag)
+    run_av.append(current)
+    run_st.append(current)
+run_st=np.array(run_st)
+run_av=np.array(run_av)
+run_av1=np.mean(run_av, axis=0)
+run_st1=np.var(run_st, axis=0)
 
 
-'''mean_positions=np.mean(run_av, axis=0)
+#print(len(st_positions))
+#print(len(st_positions))
+time=list(range(0,101,10))
+time=np.array(time)
 plt.figure(figsize=(10, 5))
-plt.scatter(np.arange(len(mean_positions)),np.mean(run_av, axis=0), label='Average Position')
-slope, intercept = np.polyfit(np.arange(len(mean_positions)), mean_positions, 1)
-fit= slope*np.arange(len(mean_positions))+intercept
-plt.plot(np.arange(len(mean_positions)), fit , label='fit')
-plt.xlabel('Iteration x10')
-plt.ylabel('Position')
-plt.legend()
-plt.show()
-print(f'this is for p={P}')
-print(f'slope={slope}')'''
-
-st_positions=np.mean(run_st, axis=0)
-plt.figure(figsize=(10, 5))
-plt.scatter(np.arange(len(st_positions)),np.mean(run_st, axis=0), label='Std Position')
-slope, intercept = np.polyfit(np.arange(len(st_positions)), st_positions, 1)
-fit= slope*np.arange(len(st_positions))+intercept
-plt.plot(np.arange(len(st_positions)), fit , label='fit')
-plt.xlabel('Iteration x10')
-plt.ylabel('Position')
+plt.scatter(time,run_av1, label='Var Position')
+slope, intercept = np.polyfit(time, run_av1, 1)
+fit= slope*time+intercept
+plt.plot(time, fit , label='fit')
+plt.xlabel('Iteration')
+plt.ylabel('average Position')
 plt.legend()
 plt.show()
 print(f'this is for p={P}')
 print(f'slope={slope}')
+print(f'in theory we have slope={P-(1-P)}')
+   
 
+#print(len(st_positions))
+#print(len(st_positions))
+time=list(range(0,101,10))
+time=np.array(time)
+plt.figure(figsize=(10, 5))
+plt.scatter(time,run_st1, label='Var Position')
+slope, intercept = np.polyfit(time, run_st1, 1)
+fit= slope*time+intercept
+plt.plot(time, fit , label='fit')
+plt.xlabel('Iteration')
+plt.ylabel('Var Position')
+plt.legend()
+plt.show()
+print(f'this is for p={P}')
+print(f'slope={slope}')
+print(f'in theory we have slope={4*P*(1-P)}')
    
 
