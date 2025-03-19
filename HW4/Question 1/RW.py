@@ -12,7 +12,7 @@ def random_walk(P):
     positions=[]
     positions.append(start_point)
     position_copy=[]
-    iteration=1000
+    iteration=100
     for i in range(iteration):
         rand = random()
         #right and left
@@ -22,7 +22,7 @@ def random_walk(P):
             current_position=current_position-1
             
         positions.append(current_position)
-        if i%100==0: #make a copy
+        if i%10==0: #make a copy
             position_copy.append(positions.copy())
              
     averag=[]
@@ -36,7 +36,7 @@ def random_walk(P):
 
 #lets run this code for 100 times
 
-run=100
+run=10000
 run_av=[]
 run_st=[]
 
@@ -46,13 +46,32 @@ for k in range(run):
     run_av.append(averag)
     run_st.append(Std)
 
+
+'''mean_positions=np.mean(run_av, axis=0)
 plt.figure(figsize=(10, 5))
-plt.plot(np.mean(run_av, axis=0), label='Average Position')
-plt.plot(np.mean(run_st, axis=0), label='Std Position')
-plt.xlabel('Iteration (x100)')
+plt.scatter(np.arange(len(mean_positions)),np.mean(run_av, axis=0), label='Average Position')
+slope, intercept = np.polyfit(np.arange(len(mean_positions)), mean_positions, 1)
+fit= slope*np.arange(len(mean_positions))+intercept
+plt.plot(np.arange(len(mean_positions)), fit , label='fit')
+plt.xlabel('Iteration x10')
 plt.ylabel('Position')
 plt.legend()
 plt.show()
+print(f'this is for p={P}')
+print(f'slope={slope}')'''
+
+st_positions=np.mean(run_st, axis=0)
+plt.figure(figsize=(10, 5))
+plt.scatter(np.arange(len(st_positions)),np.mean(run_st, axis=0), label='Std Position')
+slope, intercept = np.polyfit(np.arange(len(st_positions)), st_positions, 1)
+fit= slope*np.arange(len(st_positions))+intercept
+plt.plot(np.arange(len(st_positions)), fit , label='fit')
+plt.xlabel('Iteration x10')
+plt.ylabel('Position')
+plt.legend()
+plt.show()
+print(f'this is for p={P}')
+print(f'slope={slope}')
 
    
 
