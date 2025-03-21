@@ -5,7 +5,7 @@ from random import randint,random
 #simulating random walk in 2D
 from random import random
 
-def random_walk2(P=0.25):
+def random_walk2():
     current_position = (0, 0)
     position_copy = []
 
@@ -37,3 +37,29 @@ def random_walk2(P=0.25):
     return position_copy
 #lets run this code for 100 times
 
+run=1000
+R2=np.zeros(11)
+for i in range(run):
+    #i will call this function run times
+    positions=random_walk2()
+    #each time i need to calculate r squared and get the mean
+    for index , (x,y) in enumerate(positions):
+        R2[index]=x**2+y**2
+    R2_all.append(R2)
+
+R2_all=np.mean(R2_all, axis=0)
+
+#copy from past
+time=list(range(0,101,10))
+time=np.array(time)
+plt.figure(figsize=(10, 5))
+plt.scatter(time, R2_all, label='simulation')
+slope, intercept = np.polyfit(time, R2_all , 1)
+fit= slope*time+intercept
+plt.plot(time, fit , label=f'fit, the slope is{slope}')
+plt.xlabel('Iteration')
+plt.ylabel('mean r^2')
+plt.legend()
+plt.show()
+
+    
