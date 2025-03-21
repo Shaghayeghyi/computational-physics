@@ -31,9 +31,11 @@ def tale2(P, starting_position):
         #print(probability_array)
         #print(f'step {death_time}')
         death_time += 1
+        #print("pa",probability_array)
+        #print("total",total)
+        total += np.sum(probability_array[1:20])
     
-    
-    return death_time
+    return total
 
     
 #print(tale2(0.5,10))   
