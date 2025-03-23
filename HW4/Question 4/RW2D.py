@@ -55,7 +55,7 @@ time=list(range(0,101,10))
 time=np.array(time)
 plt.figure(figsize=(10, 5))
 plt.scatter(time, R2_all, label='simulation')
-slope, intercept = np.polyfit(time, R2_all , 1)
+(slope, intercept), (SSE,), *_ = np.polyfit(time, R2_all , 1, full=True)
 fit= slope*time+intercept
 plt.plot(time, fit , label=f'fit, the slope is{slope}')
 plt.xlabel('Iteration')
@@ -63,4 +63,4 @@ plt.ylabel('mean r^2')
 plt.legend()
 plt.show()
 
-    
+print(SSE)   
