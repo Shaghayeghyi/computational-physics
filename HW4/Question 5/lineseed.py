@@ -14,30 +14,25 @@ grid[-1,:]=1
 
 #now we will send RW down from a height like 200 as a test
 
-def random_walk2(current_position):
+def random_walk2(x,y):
     
     rand = random()
 
     if rand < 1/4:
         #right
-        current_position = (current_position[0] + 1, current_position[1])  
-            
-    elif rand < 2/4:
-            
+        x+=1      
+    elif rand < 2/4:   
         #up
-        current_position = (current_position[0], current_position[1] + 1)
-    elif rand < 3/4:
-            
+        y+=1
+    elif rand < 3/4:   
         #down
-        current_position = (current_position[0], current_position[1] - 1) 
-            
-    else:
-            
+        y-=1    
+    else:    
         #left
-        current_position = (current_position[0] - 1, current_position[1])  
+        x-=1
 
             
-    return current_position
+    return x,y
 
 #i want the RW continue till it gets stuck or gets out of range
 
@@ -62,8 +57,12 @@ y=y_start
 color=10                
 while True:
     #start walking
-    x,y +=random_walk2((x,y))
-
+    x=random_walk2(x,y)[0]%width
+    y=random_walk2(x,y)[1]
+    
+    if y >= height or y < 0:
+        break
+    
     if will_it_merge:
         grid[x,y]=color
         
