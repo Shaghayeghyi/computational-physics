@@ -36,15 +36,16 @@ def random_walk2():
             
     return position_copy
 #lets run this code for 100 times
+R2_all=[]
+run=100000
 
-run=1000
-R2=np.zeros(11)
 for i in range(run):
+    R2=np.zeros(11)
     #i will call this function run times
     positions=random_walk2()
     #each time i need to calculate r squared and get the mean
     for index , (x,y) in enumerate(positions):
-        R2[index]=x**2+y**2
+        R2[index]=(x**2+y**2)
     R2_all.append(R2)
 
 R2_all=np.mean(R2_all, axis=0)
