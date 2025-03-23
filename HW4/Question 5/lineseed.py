@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 
 #we need to create a plane
 width=200
-height=210
-start_height=200
-grid=np.zeros((width,height))
+height=100
+start_height=90
+grid=np.zeros((height,width))
 #initial seed
-grid[-1,:]=1
+grid[0,:]=1
 
 #print(grid)
 
@@ -16,7 +16,7 @@ grid[-1,:]=1
 
 def random_walk2(x,y):
     
-    rand = random()
+    rand = random.random()
 
     if rand < 1/4:
         #right
@@ -39,38 +39,57 @@ def random_walk2(x,y):
 #i need a function that checks all the neighbors of the target site to see whether a merging will happen.
 
 
-def will_it_merge(x,y):
+def will_it_merge(x,y, grid):
+    
     four_moves=[(1,0),(0,1),(-1,0),(0,-1)]
     for m,n in four_moves:
-        xneighbor=x+m
+        xneighbor=(x+m)%width
         yneighbor=y+n
-        if grid[xneighbor, yneighbor]!=0
-            return 1 #yes it will stick
-    return 0 #no i did not stick
+        if 0 <= yneighbor < height and grid[yneighbor, xneighbor] != 0:
+            return True #yes it will stick
+    return False #no i did not stick
             
         
-#test particle
-x_start=random.randint(0, width-1)
-y_start=start_height
-x=x_start
-y=y_start
-color=10                
-while True:
-    #start walking
-    x=random_walk2(x,y)[0]%width
-    y=random_walk2(x,y)[1]
-    
-    if y >= height or y < 0:
-        break
-    
-    if will_it_merge:
-        grid[x,y]=color
-        
-    elif not will_it_merge:
-        break
-    
+#test particles
+particles=2000
 
+for i in range(particles):
     
+    x_start=random.randint(0, width-1)
+    y_start=start_height
+    x=x_start
+    y=y_start
+    color = 1 + (i // 500) * 10 
+    
+    while True:
+        
+        #start walking
+        x,y=random_walk2(x,y)
+        x=x%width
+        
+        
+        if y >= height or y < 0:
+            #restart the process forget the past
+            x = random.randint(0, width - 1)
+            y = start_height
+            continue
+        
+        
+        if will_it_merge(x,y,grid):
+            grid[y,x]=color
+            break
+            
+        '''
+        #bad idea
+        if i%500==0:
+            color+=10'''
+        
+
+'''plt.imshow(grid, cmap='nipy_spectral') 
+plt.title('DLA Simulation with Initial Line Seed')
+plt.show()  '''
+
+plt.pcolor(grid , cmap ='nipy_spectral')
 
     
     
