@@ -5,14 +5,13 @@ import matplotlib.pyplot as plt
 #we need to create a plane
 width=200
 height=100
-start_height=90
 grid=np.zeros((height,width))
 #initial seed is in center now
 x_c=int(width/2)
 y_c=int(height/2)
 grid[int(height/2),int(width/2)]=1
 #print(grid)
-
+maxr=12
 def random_walk2(x,y):
     
     rand = random.random()
@@ -42,21 +41,30 @@ def will_it_merge(x,y, grid):
     
     four_moves=[(1,0),(0,1),(-1,0),(0,-1)]
     for m,n in four_moves:
-        xneighbor=(x+m)%width
+        xneighbor=(x+m)
         yneighbor=y+n
-        if 0 <= yneighbor < height and grid[yneighbor, xneighbor] != 0:
+        if 0 <= (y_neighbor**2+ x_neighbor**2)< maxr**2 and grid[y_neighbor, x_neighbor] != 0:
             return True #yes it will stick
     return False #no i did not stick
             
         
 #test particles
-particles=2000
-def initial_circle():
-    radius=10
+particles=200
+def initial_circle(x_c,y_c,radius):
+    initials=[]
+    #number of positions
+    num=50
+    angles = np.linspace(0, 2 * np.pi, num, endpoint=False)
+    x_on_circle= x_c + radius * np.cos(angles) 
+    y_on_circle = y_c + radius * np.sin(angles) 
+    #initials.append(( x_on_circle ,y_on_circle))
+    return list(zip(x_on_circle, y_on_circle))
+
 
 for i in range(particles):
     #randomly choose on a circle with radius r
-    x_start, y_start=
+    radius=10
+    x_start, y_start=random.choice(initial_circle(x_c,y_c,radius))
     x=x_start
     y=y_start
     color = 1 
@@ -65,13 +73,12 @@ for i in range(particles):
         
         #start walking
         x,y=random_walk2(x,y)
-        x=x%width
-        
-        
-        if y >= height or y < 0:
-            #restart the process forget the past
-            x = random.randint(0, width - 1)
-            y = start_height
+    
+    
+        if (x**2+y**2)>maxr**2:
+            x_start, y_start=random.choice(initial_circle(x_c,y_c,radius))
+            x=x_start
+            y=y_start
             continue
         
         
