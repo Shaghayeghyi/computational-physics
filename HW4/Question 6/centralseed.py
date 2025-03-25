@@ -1,7 +1,7 @@
 import random
 import numpy as np
 import matplotlib.pyplot as plt
-
+#circle
 #we need to create a plane
 width=210
 height=210
@@ -55,50 +55,57 @@ particles=2000
 def initial_circle(x_c,y_c,radius):
     initials=[]
     #number of positions
-    num=100
+    num=12
     angles = np.linspace(0, 2 * np.pi, num, endpoint=False)
-    x_on_circle= x_c + np.round(radius * np.cos(angles)).astype(int) 
-    y_on_circle = y_c + np.round(radius * np.sin(angles)).astype(int)
+    x_on_circle= x_c +(radius * np.cos(angles)).astype(int)
+    y_on_circle = y_c +(radius * np.sin(angles)).astype(int)
     #initials.append(( x_on_circle ,y_on_circle))
     return list(zip(x_on_circle, y_on_circle))
 
-
+radius=95
+'''
+#check
+points=initial_circle(0,0,10)
+plt.scatter(*zip(*points), color='red', s=50)
+plt.axis('equal')
+plt.show()'''
 for i in range(particles):
     #randomly choose on a circle with radius r
-    radius=95
     x_start, y_start=random.choice(initial_circle(x_c,y_c,radius))
     x=x_start
     y=y_start
     color = 1 
-    
-    while True:
+    index=True
+    while index:
         
         #start walking
         x,y=random_walk2(x,y)
+        R=(x-x_c)**2+(y-y_c)**2
     
-    
-        if ((x-x_c)**2+(y-y_c)**2)>maxr**2:
-            x_start, y_start=random.choice(initial_circle(x_c,y_c,radius))
-            x=x_start
-            y=y_start
+        if (R)>maxr**2:
+            x, y=random.choice(initial_circle(x_c,y_c,radius))
+            #print(x,y) 
             continue
         
         
         if will_it_merge(x,y,grid):
-            grid[y,x]=color
-            break
+            #just in case check this
+            if 0 <= x < width and 0 <= y < height:
+                grid[y, x] = 1
+                index = False
             
     
         
+plt.figure(figsize=(5, 5))
+plt.imshow(grid, cmap='Grays',origin='lower') 
+plt.title('DLA Simulation with central Seed')
+plt.axis('equal')
+plt.show()
 
-'''plt.imshow(grid, cmap='nipy_spectral') 
-plt.title('DLA Simulation with Initial Line Seed')
-plt.show()'''
 
+#plt.pcolor(grid , cmap ='nipy_spectral')
 
-plt.pcolor(grid , cmap ='nipy_spectral')
-
-   
+ 
     
 
 
