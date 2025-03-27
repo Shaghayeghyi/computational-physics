@@ -13,24 +13,31 @@ print(visited_sites)'''
 def SAW(max_step):
     visited_sites=[]
     positions=[]
-    possible_moves=[]
     x_start , y_start = 0,0
     x=x_start
     y=y_start
     visited_sites.append((x,y))
     positions.append((x,y))
-    for i in range(max_step):
+    for step in range(max_step):
+        
         neighbors=[(x + 1, y),(x, y + 1),(x, y - 1),(x - 1, y)]
+        possible_moves=[]
         for j in neighbors:
             if j not in visited_sites:
                 possible_moves.append(j)
-        x,y=random.choice(possible_moves)
-        positions.append(new)
-        visited_sites.append(new)
-        
-         
+                
+        if not possible_moves:
+            return step #the walker is caught
+
             
-             
+        x,y=random.choice(possible_moves)
+        positions.append((x,y))
+        visited_sites.append((x,y))
+    return max_step #reached the steps possible
+        
+      
+'''#test            
+print(SAW(10))'''       
             
                            
            
