@@ -39,6 +39,13 @@ def SAW(max_step):
 '''#test            
 print(SAW(10))'''       
             
-                           
-           
-    
+runs=100000
+steps=[]
+for run in range(runs):
+    steps.append(SAW(500))
+
+plt.figure(figsize=(10, 6))
+plt.hist(steps, edgecolor='black',alpha=0.7)
+plt.xlabel('Steps')
+plt.ylabel('Frequency')
+plt.show()        
