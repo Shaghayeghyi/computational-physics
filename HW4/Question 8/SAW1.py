@@ -31,6 +31,21 @@ def all_SAW(N,x=0 ,y=0 , visited_sites=None):
                 count+=sub_count
                 
     return count
+'''#test    
+print(all_SAW(5,0,0,None))  '''
+lenght=np.arange(1,11)
+all_N=[]
+ratio=[]
+for L in lenght:
+    N=all_SAW(L,0,0,None)
+    all_N.append(N)
+    ratio.append(N/(4**L))
     
-print(all_SAW(5,0,0,None))             
+'''plt.plot(lenght ,all_N )
+plt.xlabel('number of steps')
+plt.ylabel('number of SAW')'''
+
+plt.plot(lenght ,ratio)
+plt.xlabel('number of steps')
+plt.ylabel('number of SAW over normal RW')
     
