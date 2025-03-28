@@ -1,4 +1,4 @@
-import random
+'''import random
 import numpy as np
 import matplotlib.pyplot as plt
 #circle
@@ -103,9 +103,140 @@ plt.axis('equal')
 plt.show()
 
 
+#plt.pcolor(grid , cmap ='nipy_spectral')'''
+
+
+
+import random
+import numpy as np
+import matplotlib.pyplot as plt
+#square
+#we need to create a plane
+width=210
+height=210
+grid=np.zeros((height,width))
+#initial seed is in center now
+x_c=int(width/2)
+y_c=int(height/2)
+grid[int(height/2),int(width/2)]=1
+#print(grid)
+maxd=200
+def random_walk2(x,y):
+    
+    rand = random.random()
+
+    if rand < 1/4:
+        #right
+        x+=1      
+    elif rand < 2/4:   
+        #up
+        y+=1
+    elif rand < 3/4:   
+        #down
+        y-=1    
+    else:    
+        #left
+        x-=1
+
+            
+    return x,y
+
+#i want the RW continue till it gets stuck or gets out of range
+
+#i need a function that checks all the neighbors of the target site to see whether a merging will happen.
+
+
+def will_it_merge(x,y, grid):
+    
+    four_moves=[(1,0),(0,1),(-1,0),(0,-1)]
+    for m,n in four_moves:
+        xneighbor=x+m
+        yneighbor=y+n
+        if 0 <= xneighbor < width and 0 <= yneighbor < height:
+             if grid[yneighbor, xneighbor] != 0:
+                return True #yes it will stick
+             
+    return False #no i did not stick
+            
+        
+#test particles
+particles=2000
+def initial_square(x_c,y_c,distance):
+   #we have four sides and we randomly choose one
+    #each number in this array represents a side
+    sides=[0,1,2,3]
+    #half of square
+    d2=int(distance/2)
+    random_side=random.choice(sides)
+    if random_side==0:
+        #top
+        x = random.randint(x_c - d2, x_c + d2)
+        y = y_c + d2
+    elif random_side==1:
+        #bottom
+        x = random.randint(x_c - d2, x_c + d2)
+        y = y_c - d2
+    elif random_side==2:
+        #left
+        y = random.randint(y_c - d2, y_c + d2)
+        x = x_c - d2
+    elif random_side==3:
+        #right
+        y = random.randint(y_c - d2, y_c + d2)
+        x = x_c + d2
+    return x,y
+    
+d=190
+'''
+#check
+points=initial_circle(0,0,10)
+plt.scatter(*zip(*points), color='red', s=50)
+plt.axis('equal')
+plt.show()'''
+for i in range(particles):
+    #randomly choose on a circle with radius r
+    x_start, y_start=initial_square(x_c,y_c,d)
+    x=x_start
+    y=y_start
+    color = 1 
+    index=True
+    #counter=0
+    while index:
+        
+        #start walking
+        x,y=random_walk2(x,y)
+        
+    
+        if (abs(x - x_c) >maxd) or (abs(y - y_c) > maxd):
+            x, y=initial_square(x_c,y_c,d)
+            #print(x,y)
+            continue
+        
+        
+        if will_it_merge(x,y,grid):
+            #just in case check this
+            if 0 <= x < width and 0 <= y < height:
+                grid[y, x] = 1
+                index = False
+            
+    
+        
+plt.figure(figsize=(5, 5))
+plt.imshow(grid, cmap='Grays',origin='lower') 
+plt.title('DLA Simulation with central Seed')
+plt.axis('equal')
+plt.show()
+
+
 #plt.pcolor(grid , cmap ='nipy_spectral')
 
  
+    
+
+
+
+    
+
     
 
 
