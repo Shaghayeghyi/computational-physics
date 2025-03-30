@@ -3,22 +3,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 #use time
-x = int(time.time())
+
 def module(x,a,c,m):
     return (a*x+c)%m
 
 def generator1(N):
+    x = int(time.time())
     #define the parameters
     m=2**31
     c=1013904223
     a=1664525
     module_array=[]
     for num in range(N):
-        x=module(x,a,c,m)
+        x_current=module(x,a,c,m)
         #between 0 and 9
         module_array.append(x%10)
-        
-    return module_array
+        x=x_current
+    count_array=[]
+    for counts in range(10):
+        count_array.append(module_array.count(counts))   
+    return count_array
 
 N=100000
 #print(generator(100))
@@ -43,7 +47,7 @@ for N in Ns:
 logN=np.log(Ns)
 logSigma=np.log(all_N)
 plt.scatter(logN,logSigma)
-plt.ylabel("log sigma/sqrtN") 
+plt.ylabel("log sigma/N") 
 plt.xlabel("log N")
 a,b = np.polyfit(logN, logSigma, deg =1)
 fit=a*logN+b
