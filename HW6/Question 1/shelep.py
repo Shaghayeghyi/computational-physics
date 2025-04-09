@@ -18,3 +18,13 @@ def real_result():
 #what is the real output
 result=real_result()
 
+
+#approximation of min and max of function for correct boundary
+
+def min_max():
+    x_vals = np.linspace(0, 2, 1000)  # 1000 points in [0, 2]
+    y_vals = x_vals**3 - 5*x_vals
+
+    return np.min(y_vals) , np.max(y_vals)
+
+
