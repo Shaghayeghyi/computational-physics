@@ -42,7 +42,21 @@ def shelep(N):
     return 2*(max_y+5)*Np/N
     
 
-print(shelep(100000))
+#print(shelep(100000))
+
+#let's plot the difference
+
+Ns = np.arange(1000, 100000, 2000, dtype=int)
+
+difference=[]
+for N in Ns:
+    diff=np.abs(real_result()-shelep(N))
+    difference.append(diff)
+plt.plot(Ns,difference)
+plt.xlabel("N")
+plt.ylabel("difference")
+plt.show()
+    
         
         
 
