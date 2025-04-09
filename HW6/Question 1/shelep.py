@@ -9,7 +9,7 @@ import random
 def real_result():
 
     def f_x(x):
-        return x**3 - 5*x
+        return -x**3 + 5*x
     
     answer , error = quad(f_x, 0, 2)
 
@@ -23,8 +23,28 @@ result=real_result()
 
 def min_max():
     x_vals = np.linspace(0, 2, 1000)  # 1000 points in [0, 2]
-    y_vals = x_vals**3 - 5*x_vals
+    y_vals = -x_vals**3 + 5*x_vals
 
     return np.min(y_vals) , np.max(y_vals)
 
 
+
+def shelep(N):
+    Np=0
+    min_y , max_y= min_max()
+    for i in range(N):
+        random_y=np.random.uniform(min_y, max_y+5)
+        random_x=np.random.uniform(0,2)
+        F=-random_x**3+5*random_x
+        if random_y<F:
+            Np+=1
+
+    return 2*(max_y+5)*Np/N
+    
+
+print(shelep(100000))
+        
+        
+
+     
+     
