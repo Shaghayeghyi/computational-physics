@@ -42,23 +42,28 @@ def shelep(N):
     return 2*(max_y+5)*Np/N
     
 
-#print(shelep(100000))
+print(f"this is the result of shelep for N=100000:{shelep(100000)}")
 
 #let's plot the difference
 
 Ns = np.arange(1000, 100000, 2000, dtype=int)
 
 difference=[]
+#we can get mean of runs
+runs=10
+mean_diff=[]
 for N in Ns:
-    diff=np.abs(real_result()-shelep(N))
-    difference.append(diff)
+    for run in range(runs):
+        diff=np.abs(real_result()-shelep(N))
+        mean_diff.append(diff)
+    difference.append(np.mean(mean_diff))
 plt.plot(Ns,difference)
 plt.xlabel("N")
 plt.ylabel("difference")
 plt.show()
     
         
-        
+     
 
      
      
