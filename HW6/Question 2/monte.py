@@ -1,7 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+from scipy.integrate import quad
 from time import time
+import pandas as pd
 
 #we want to calculate simple and important integral
 
@@ -35,19 +37,19 @@ def simple(N):
     stop=time()
     
     #for the error we need to calculate the std over sqrt(N)
-    sample_error=np.std(sample)/np.sqrt(N)
-    print(sample_error)
+    sample_error=2*np.std(sample)/np.sqrt(N)
+    #print(sample_error)
 
     #we should calculate the real error too
 
-    real_error=real_result()-integral
-    print(real_error)
+    real_error=np.abs(real_result()-integral)
+    #print(real_error)
 
     #let's see how much time it take
 
     duration=stop-start
-    print(duration)
-
+    #print(duration)
+    return integral , sample_error , real_error , duration
     
 
 def important(N):
@@ -60,24 +62,62 @@ def important(N):
         important_y=np.exp(-random_x**2)/np.exp(-random_x)
         sample.append(important_y)
     #so we have our sample now we need to calculate the mean
-
+    #the result has a new formula
     integral=(1-np.exp(-2))*np.mean(sample)
-    print(integral)
+    #print(integral)
     
     stop=time()
     
     #for the error we need to calculate the std over sqrt(N)
-    sample_error=np.std(sample)/np.sqrt(N)
-    print(sample_error)
+    sample_error=real_result()*np.std(sample)/np.sqrt(N)
+    #print(sample_error)
 
     #we should calculate the real error too
 
-    real_error=real_result()-integral
-    print(real_error)
+    real_error=np.abs(real_result()-integral)
+    #print(real_error)
 
     #let's see how much time it take
 
     duration=stop-start
-    print(duration)
+    #print(duration)
+    return integral , sample_error , real_error , duration
     
-important(10000)
+#data frame for comparing
+def table(Ns):
+    results = []
+    
+    real_value = real_result()
+    #let's create two arrays to save the important and simple errors
+    error_im=[]
+    error_si=[]
+    for N in Ns:
+        #simple variables
+        s_integral, s_samp_err, s_real_err, s_time = simple(N)
+        error_si.append(s_samp_err)
+        #important variables
+        i_integral, i_samp_err, i_real_err, i_time = important(N)
+        error_im.append(i_samp_err)
+        # add a row
+        results.append({
+            'N': N, 'real value': real_value,'simple integral': s_integral,'simple sample error': s_samp_err,'simple difference error': s_real_err,'simple time': s_time,
+            'important integral': i_integral,'important sample error': i_samp_err,'important difference error': i_real_err,'important time': i_time})
+   
+    df = pd.DataFrame(results)
+    return df , error_im , error_si
+
+N_values = [100, 1000, 10000, 100000, 1000000]
+results_df, important_E,simple_E = table(N_values)
+
+
+print(results_df)
+
+
+
+#plots
+plt.plot(N_values, important_E, label="important")
+plt.plot(N_values, simple_E, label="simple")
+plt.xlabel("N")
+plt.ylabel("error")
+plt.legend()
+plt.show()
