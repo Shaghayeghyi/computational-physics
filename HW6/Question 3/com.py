@@ -12,6 +12,7 @@ def center_of_mass(R,N):
     x_filtered=x[true_false]
     y_filtered=y[true_false]
     z_filtered=z[true_false]
+    N_filtered=len(z_filtered)
 
     #define density
     rho_0=2
@@ -30,11 +31,11 @@ def center_of_mass(R,N):
 
     #error
     #z
-    z_er=(4/3*np.pi*R**3)*np.std(rho_z*z_filtered)/total_mass_integral/np.sqrt(N)
+    z_er=(4/3*np.pi*R**3)*np.std(rho_z*z_filtered)/total_mass_integral/np.sqrt(N_filtered)
     #x
-    x_er=(4/3*np.pi*R**3)*np.std(rho_z*x_filtered)/total_mass_integral/np.sqrt(N)
+    x_er=(4/3*np.pi*R**3)*np.std(rho_z*x_filtered)/total_mass_integral/np.sqrt(N_filtered)
     #y
-    y_er=(4/3*np.pi*R**3)*np.std(rho_z*y_filtered)/total_mass_integral/np.sqrt(N)
+    y_er=(4/3*np.pi*R**3)*np.std(rho_z*y_filtered)/total_mass_integral/np.sqrt(N_filtered)
     
     
     
@@ -49,7 +50,7 @@ def center_of_mass(R,N):
 
 # Example usage
 R = 15
-z,x,y,z_er,x_er,y_er = center_of_mass(R,100000)
+z,x,y,z_er,x_er,y_er = center_of_mass(R,1000000)
 print(f"Numerical z,x,y: {z,x,y}")
 print(f"Exact z,x,y: {R/15,0,0}")
 print(f"Error for z,x,y:{z_er,x_er,y_er}")
