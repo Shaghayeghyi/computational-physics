@@ -69,7 +69,7 @@ def important(N):
     stop=time()
     
     #for the error we need to calculate the std over sqrt(N)
-    sample_error=real_result()*np.std(sample)/np.sqrt(N)
+    sample_error=(1-np.exp(-2))*np.std(sample)/np.sqrt(N)
     #print(sample_error)
 
     #we should calculate the real error too
