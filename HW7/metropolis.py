@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+from scipy.optimize import curve_fit
 
 #assume the equilibrium
 def Gaussian_p(x):
@@ -31,16 +32,21 @@ def metropolic(size,step):
     rate=accept_count/size
     return rate, number_array
 
-            
+'''def Gaussian_p_N(x):
+
+    g=1/np.sqrt(2*np.pi)*np.exp(-(x)**2)
+    return g           
 #print(metropolic(1000,0.1))
+xs= np.linspace(-5, 5, 500)
+y = Gaussian_p_N(xs)'''
 
-
-step=0.35
+step=11
 rate, array=metropolic(1000000,step)
 print(f"this is the rate of acceptance:{rate} for step={step}")
-'''plt.hist(array, bins=70, alpha=0.7,rwidth=0.85, density=True)
+plt.hist(array, bins=70, alpha=0.7,rwidth=0.85, density=True)
+plt.plot(xs,y)
 plt.title(f"gaussian histogram for step={step}")
-plt.show()'''
+plt.show()
 
 #for various js from 0 to 100
 def correlation(array):
@@ -60,7 +66,30 @@ def correlation(array):
 
     return correlation_js
             
-print(correlation(array))        
+Cor=correlation(array)
+#ksi=len(np.array(Cor)[np.array(Cor)>np.exp(-1)])
+#print(f"this is ksi{ksi}")
+
+threshold = 1/np.e
+for j, value in enumerate(Cor):
+    if value < threshold:
+        print(f"Correlation length is j = {j} (value = {value:})")
+        break
+
+def exp_decay(j, a, ksi):
+    return a * np.exp(-j /ksi)
+    
+J=np.arange(100)
+a_ksi, cov=curve_fit(exp_decay, J, Cor,p0=[1, 10])
+a,ksi=a_ksi
+print(f"this is ksi by fit={ksi}")
+plt.scatter(J,Cor,label='data')
+plt.plot(J,a * np.exp(-J /ksi),label='fit')
+plt.xlabel("Js")
+plt.ylabel("correlation")
+plt.legend()
+plt.show()
+
 
 
 
