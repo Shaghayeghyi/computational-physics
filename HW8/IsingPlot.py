@@ -40,16 +40,43 @@ def metropolis(lattice,L,J):
 
 
 #we can check our code for critical behavior
-Js=[1,2,3,4,5]
+L=50
+Js=[0.4, 0.45, 0.5, 0.55, 0.6]
 time_steps=100
+evolution_for_Js=[]
 #in a for loop create the animations of evolutions
 for J in Js:
     #evolution for each J will be stored in a 3D array
     lattice_snapshot=np.zeros((time_steps,L,L))
-    lattice=lattice(L)
+    lattice=Lattice(L)
     for time in range(time_steps):
-        
-        
+        lattice=metropolis(lattice,L,J)
+        lattice_snapshot[time]=lattice
+    evolution_for_Js.append(lattice_snapshot)
+
+
+#animation
+import matplotlib.animation as animation
+import matplotlib
+from IPython.display import HTML
+for idx, J in enumerate(Js):
+    data = lattices_per_J[idx]
+
+    fig, ax = plt.subplots()
+    im = ax.imshow(data[0], cmap='bwr', vmin=-1, vmax=1)
+    ax.set_title(f'Ising Model: J = {J}')
+    ax.axis('off')
+
+    def update(frame):
+        im.set_array(data[frame])
+        return [im]
+
+    ani = animation.FuncAnimation(fig, update, frames=time_steps, interval=100, blit=True)
+    display(HTML(ani.to_jshtml()))
+    plt.close()
+
+
+
 
 
 
