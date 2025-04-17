@@ -13,6 +13,13 @@ def Lattice(L):
     return lattice
 
 #check
-#print(Lattice(10))
+#lattice=Lattice(50)
 
-
+#save the energy change for a filp in (i,j)!
+@jit(nopython=True)
+def delta_E(lattice,i,j,L,J):
+    #periodic boundary
+    delta=-2*J*lattice[i,j]*(lattice[(i-1)%L,j]+lattice[(i+1)%L,j]+lattice[i,(j-1)%L]+lattice[i,(j+1)%L])
+    return delta
+#the out puts seeem to be correct accodrgin to book
+#print(delta_E(lattice,0,1,10,1))
