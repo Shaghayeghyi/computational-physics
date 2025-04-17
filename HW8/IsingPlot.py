@@ -11,15 +11,33 @@ def Lattice(L):
     rand_array = np.random.randint(0, 2, size=(L, L))
     lattice = 2 * rand_array - 1
     return lattice
-
 #check
-#lattice=Lattice(50)
+lattice=Lattice(50)
+
 
 #save the energy change for a filp in (i,j)!
 @jit(nopython=True)
 def delta_E(lattice,i,j,L,J):
-    #periodic boundary
+    #boundary
     delta=-2*J*lattice[i,j]*(lattice[(i-1)%L,j]+lattice[(i+1)%L,j]+lattice[i,(j-1)%L]+lattice[i,(j+1)%L])
     return delta
-#the out puts seeem to be correct accodrgin to book
+#the outputs seeem to be correct according to book
 #print(delta_E(lattice,0,1,10,1))
+
+
+#now let's define the metropolis loops
+
+def metropolis(lattice,L,J):
+    #we want to check the energy change by going through a random choice of i,j 
+    for iteration in range(L*L):
+        i=np.random.randint(0,L)
+        j=np.random.randint(0,L)
+        dE=delta_E(lattice,i,j,L,J)
+        if dE <= 0 or np.random.rand() < np.exp(-dE):
+            lattice[i, j] *= -1
+            
+    return lattice
+
+metropolis(lattice,50,2)
+    
+
