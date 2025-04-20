@@ -87,3 +87,25 @@ def correlation(array,j):
     mean_j=sum_j/(n-j)
     lenght_j=(mean_ij-np.mean(array)*mean_j)/sigma
     return lenght_j
+
+
+#main code, we are ready use our functions
+def main_function(run,L,J,sample_step):
+    energies=[]
+    magnetism=[]
+    Cv=[]
+    correlations=[]
+    lattice=Lattice(L)
+    
+    for runs in range(run):
+        #forget intial condition, look for equilibrium
+        lattice=metropolis(lattice,L,J)
+    lattice_final=lattice
+    
+    for sample in range(sample_step):
+        latt = metropolis(lattice_final,L,J)
+        energies.append(energy(latt,L,J))
+        magnetism.append(m(latt,L))
+    
+    
+
