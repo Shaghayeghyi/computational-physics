@@ -74,3 +74,16 @@ def susceptibility(M, T):
     X_2 = np.mean(M**2) 
     X = (X_2 - X_mean**2) / T 
     return X
+
+def correlation(array,j):
+    n=len(array)
+    sigma=np.var(array)
+    sum_ij=0
+    sum_j=0
+    for i in range(n-j):
+        sum_ij+=array[i]*array[i+j]
+        sum_j+=array[i+j]
+    mean_ij=sum_ij/(n-j)
+    mean_j=sum_j/(n-j)
+    lenght_j=(mean_ij-np.mean(array)*mean_j)/sigma
+    return lenght_j
