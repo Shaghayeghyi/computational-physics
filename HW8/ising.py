@@ -90,22 +90,67 @@ def correlation(array,j):
 
 
 #main code, we are ready use our functions
-def main_function(run,L,J,sample_step):
-    energies=[]
-    magnetism=[]
-    Cv=[]
-    correlations=[]
-    lattice=Lattice(L)
-    
-    for runs in range(run):
-        #forget intial condition, look for equilibrium
-        lattice=metropolis(lattice,L,J)
-    lattice_final=lattice
-    
-    for sample in range(sample_step):
-        latt = metropolis(lattice_final,L,J)
-        energies.append(energy(latt,L,J))
-        magnetism.append(m(latt,L))
-    
-    
+def main_function(run,L,sample_step,corr_lag):
+    Js = np.linspace(0.2, 1.0, 20)
+    #do this at different Ts or equivalently Js
+    T_energies=[]
+    T_magnetism=[]
+    T_Cv=[]
+    T_chi=[]
+    #T_correlations=[]
+    for J in Js:
+        energies=[]
+        magnetism=[]
+        #correlations=[]
+        lattice=Lattice(L)
+        
+        for runs in range(run):
+            #forget intial condition, look for equilibrium
+            lattice=metropolis(lattice,L,J)
+        lattice_final=lattice
+        
+        for sample in range(sample_step):
+            latt = metropolis(lattice_final,L,J)
+            energies.append(energy(latt,L,J))
+            magnetism.append(m(latt,L))
+            
+        #we have no h
+        T = 1.0 / J
+        avg_energy = np.mean(energies)
+        avg_magnet = np.mean(np.abs(magnetism))
+        cv = specific_heat(energies, T)
+        chi = susceptibility(np.abs(magnetism), T)
+        #corr = correlation(magnetism, corr_lag)
+        T_energies.append(avg_energy)
+        T_magnetism.append(avg_magnet)
+        T_Cv.append(cv)
+        T_chi.append(chi)
+        #T_correlations.append()
+    return Js, T_energies, T_magnetism, T_Cv,T_chi
+
+Js, T_energies, T_magnetism, T_Cv,T_chi=main_function(10,10,1000,10)
+T = 1.0 / np.array(Js)
+
+
+fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(10, 8))
+axes[0, 0].scatter(T,T_energies )
+axes[0, 0].set_title('E-T')
+axes[0, 0].set_xlabel("T")
+axes[0, 0].set_ylabel("E")
+
+axes[0, 1].scatter(T, T_magnetism)
+axes[0, 1].set_title('M-T')
+axes[0, 1].set_xlabel("T")
+axes[0, 1].set_ylabel("M")
+
+axes[1, 0].scatter(T, T_Cv)
+axes[1, 0].set_title('C-T')
+axes[1, 0].set_xlabel("T")
+axes[1, 0].set_ylabel("C")
+
+axes[1, 1].scatter(T, T_chi)
+axes[1, 1].set_title('X-T')
+axes[1, 1].set_xlabel("T")
+axes[1, 1].set_ylabel("X")
+ 
 
