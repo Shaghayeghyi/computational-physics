@@ -26,6 +26,7 @@ def delta_E(lattice,i,j,L,J):
 
 
 #now let's define the metropolis loops
+@jit(nopython=True)
 def metropolis(lattice,L,J):
     #we want to check the energy change by going through a random choice of i,j 
     for iteration in range(L*L):
@@ -59,4 +60,17 @@ def m(lattice,L):
     #in unit of volume
     return sums/(L**2)
 
-            
+
+def specific_heat(energies, T):
+    energies = np.array(energies)  
+    mean_energy = np.mean(energies)
+    energy_squared_mean = np.mean(energies**2) 
+    specific_heat = (energy_squared_mean - mean_energy**2) / (T**2)
+    return specific_heat
+    
+def susceptibility(M, T):
+    M = np.array(M)
+    X_mean = np.mean(M)
+    X_2 = np.mean(M**2) 
+    X = (X_2 - X_mean**2) / T 
+    return X
