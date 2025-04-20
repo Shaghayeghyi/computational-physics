@@ -49,5 +49,14 @@ def energy(lattice, L, J):
             sum_of_neighbors+=(S_ij*(lattice[(i-1)%L,j]+lattice[(i+1)%L,j]+lattice[i,(j-1)%L]+lattice[i,(j+1)%L]))
     energy=-J*(sum_of_neighbors /2)
     return energy
-            
+
+
+def m(lattice,L):
+    sums=0
+    for i in range(L):
+        for j in range(L):
+            sums+=lattice[i,j]
+    #in unit of volume
+    return sums/(L**2)
+
             
