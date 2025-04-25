@@ -93,30 +93,39 @@ def correlation(array,j):
 @jit(nopython=True,cache=False)
 def run(lattice, L, T):
     #more at low T
-    n= 5000 if T < 1 else 100
+    n= 6000 if T < 1 else 2000
     for _ in range(n):
         lattice = metropolis(lattice, L, T)
     return lattice
 
 #main code, we are ready use our functions
 def main_function(L,sample_step):
-    Ts = np.linspace(1.5,3, 40)
+    Ts = np.linspace(0.2,5, 15)
+    '''Ts = np.round(np.concatenate([
+    np.linspace(0.2, 1.0, 4),
+    np.linspace(1.9, 3.0, 8),
+    np.linspace(3.0, 5.0, 4)]), 4)'''
+   
+
     #do this at different Ts or equivalently Js
     T_energies=[]
     T_magnetism=[]
     T_Cv=[]
     T_chi=[]
     #T_correlations=[]
+    lattice=Lattice(L)
     for T in Ts:
         energies=[]
         magnetism=[]
         #correlations=[]
-        lattice=Lattice(L)
+        
        
         lattice=run(lattice,L,T)
-        
+        for _ in range(1000):
+            lattice = metropolis(lattice, L, T)
+            
         for sample in range(sample_step):
-            if sample%5==0:
+            if sample%10==0:
                 lattice = metropolis(lattice,L,T)
                 energies.append(energy(lattice,L))
                 magnetism.append(m(lattice,L))
@@ -134,7 +143,7 @@ def main_function(L,sample_step):
         #T_correlations.append()
     return Ts, T_energies, T_magnetism, T_Cv,T_chi
     
-T, T_energies, T_magnetism, T_Cv ,T_chi=main_function(40,30000)
+T, T_energies, T_magnetism, T_Cv ,T_chi=main_function(100,10000)
 
 
 '''T=[]
