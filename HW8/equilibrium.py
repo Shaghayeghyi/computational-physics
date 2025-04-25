@@ -101,14 +101,14 @@ def main_part(X,J,L):
     Es = []
     steps = []
     for i in range (X):
-        lattice_final = metropolis(lattice ,L,J) 
-        Ms.append(m(lattice_final,L))
-        Es.append(energy(lattice_final,L,J))
+        lattice = metropolis(lattice ,L,J) 
+        Ms.append(m(lattice,L))
+        Es.append(energy(lattice,L,J))
         steps.append(i)         
           
     return  steps , Es , Ms 
 J=2
-X=35000
+X=50
 L=50
 #running the whole part 10 times to find the best sweep number    
 colors = ['b','r','g','c','m','y','k','orange','deeppink','greenyellow']    
