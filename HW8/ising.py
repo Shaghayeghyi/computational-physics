@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 from numba import jit
+from multiprocessing import Pool, cpu_count
+
 
 #creating the initial lattice
 @jit(nopython=True)
@@ -17,9 +19,9 @@ def Lattice(L):
 
 #save the energy change for a filp in (i,j)!
 @jit(nopython=True)
-def delta_E(lattice,i,j,L,J):
+def delta_E(lattice,i,j,L):
     #boundary
-    delta=2*J*lattice[i,j]*(lattice[(i-1)%L,j]+lattice[(i+1)%L,j]+lattice[i,(j-1)%L]+lattice[i,(j+1)%L])
+    delta=2*lattice[i,j]*(lattice[(i-1)%L,j]+lattice[(i+1)%L,j]+lattice[i,(j-1)%L]+lattice[i,(j+1)%L])
     return delta
 #the outputs seeem to be correct according to book
 #print(delta_E(lattice,0,1,10,1))
@@ -27,13 +29,13 @@ def delta_E(lattice,i,j,L,J):
 
 #now let's define the metropolis loops
 @jit(nopython=True)
-def metropolis(lattice,L,J):
+def metropolis(lattice,L,T):
     #we want to check the energy change by going through a random choice of i,j 
     for iteration in range(L*L):
         i=np.random.randint(0,L)
         j=np.random.randint(0,L)
-        dE=delta_E(lattice,i,j,L,J)
-        if dE <= 0 or np.random.rand() < np.exp(-dE):
+        dE=delta_E(lattice,i,j,L)
+        if dE <= 0 or np.random.rand() < np.exp(-dE/T):
             lattice[i, j] *= -1
             
     return lattice
@@ -42,13 +44,13 @@ def metropolis(lattice,L,J):
 #we need to define functions for energy of lattice, m , Cv , X and correlation lenght
 
 @jit(nopython=True)
-def energy(lattice, L, J):
+def energy(lattice, L):
     sum_of_neighbors=0
     for i in range(L):
         for j in range(L):
             S_ij=lattice[i,j]
             sum_of_neighbors+=(S_ij*(lattice[(i-1)%L,j]+lattice[(i+1)%L,j]+lattice[i,(j-1)%L]+lattice[i,(j+1)%L]))
-    energy=-J*(sum_of_neighbors /2)
+    energy=-1*(sum_of_neighbors /2)
     return energy
 
 
@@ -87,49 +89,78 @@ def correlation(array,j):
     mean_j=sum_j/(n-j)
     lenght_j=(mean_ij-np.mean(array)*mean_j)/sigma
     return lenght_j
-
+    
+@jit(nopython=True,cache=False)
+def run(lattice, L, T):
+    #more at low T
+    n= 5000 if T < 1 else 100
+    for _ in range(n):
+        lattice = metropolis(lattice, L, T)
+    return lattice
 
 #main code, we are ready use our functions
-def main_function(run,L,sample_step,corr_lag):
-    Js = np.linspace(0.2, 1.0, 20)
+def main_function(L,sample_step):
+    Ts = np.linspace(1.5,3, 40)
     #do this at different Ts or equivalently Js
     T_energies=[]
     T_magnetism=[]
     T_Cv=[]
     T_chi=[]
     #T_correlations=[]
-    for J in Js:
+    for T in Ts:
         energies=[]
         magnetism=[]
         #correlations=[]
         lattice=Lattice(L)
-        
-        for runs in range(run):
-            #forget intial condition, look for equilibrium
-            lattice=metropolis(lattice,L,J)
-        lattice_final=lattice
+       
+        lattice=run(lattice,L,T)
         
         for sample in range(sample_step):
-            latt = metropolis(lattice_final,L,J)
-            energies.append(energy(latt,L,J))
-            magnetism.append(m(latt,L))
-            
+            if sample%5==0:
+                lattice = metropolis(lattice,L,T)
+                energies.append(energy(lattice,L))
+                magnetism.append(m(lattice,L))
+                
         #we have no h
-        T = 1.0 / J
-        avg_energy = np.mean(energies)
+        avg_energy = np.mean(energies)/(L*L)
         avg_magnet = np.mean(np.abs(magnetism))
-        cv = specific_heat(energies, T)
-        chi = susceptibility(np.abs(magnetism), T)
+        cv = specific_heat(energies, T)/(L*L)
+        chi = susceptibility((magnetism), T)
         #corr = correlation(magnetism, corr_lag)
         T_energies.append(avg_energy)
         T_magnetism.append(avg_magnet)
         T_Cv.append(cv)
         T_chi.append(chi)
         #T_correlations.append()
-    return Js, T_energies, T_magnetism, T_Cv,T_chi
+    return Ts, T_energies, T_magnetism, T_Cv,T_chi
+    
+T, T_energies, T_magnetism, T_Cv ,T_chi=main_function(40,30000)
 
-Js, T_energies, T_magnetism, T_Cv,T_chi=main_function(10,10,1000,10)
-T = 1.0 / np.array(Js)
+
+'''T=[]
+T_energies=[]
+T_magnetism=[]
+T_Cv=[]
+T_chi=[]
+
+for i in range(10):
+    T1, T_energies1, T_magnetism1, T_Cv1,T_chi1=main_function(50,30000)
+    T.append(T1)
+    T_energies.append(T_energies1)
+    T_magnetism.append(T_magnetism1)
+    T_Cv.append(T_Cv1)
+    T_chi.append(T_chi1)
+    
+T=np.mean(T,axis=0)
+T_energies=np.mean(T_energies,axis=0)
+T_magnetism=np.mean(T_magnetism,axis=0)
+T_Cv=np.mean(T_Cv,axis=0)
+T_chi=np.mean(T_chi,axis=0)'''
+
+    
+    
+    
+
 
 
 fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(10, 8))
@@ -152,5 +183,4 @@ axes[1, 1].scatter(T, T_chi)
 axes[1, 1].set_title('X-T')
 axes[1, 1].set_xlabel("T")
 axes[1, 1].set_ylabel("X")
- 
 
