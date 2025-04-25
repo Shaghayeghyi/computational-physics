@@ -76,46 +76,53 @@ def susceptibility(M, T):
     X = (X_2 - X_mean**2) / T 
     return X
     
-def correlation(lattice,L):
+def correlation(lattice,L,T):
     mean_spin = np.mean(lattice)
     var_spin = np.var(lattice)
     
-    if var_spin == 0:
-        #fully ordered, we have to definition
-        return 0  
-
-    
-    max_shift =int(L/4)
+    if var_spin<10**-6:
+        return 0.2
+        
+    max_shift = int(L/2)
+    '''if T < 1.5:
+        max_shift = min(int(L/2), 50)  #longer range
+    elif T > 3.0:
+        max_shift = min(int(L/4), 10)  # shorter range is cool :)
+    else:  #this is around Tc
+        max_shift = int(L/3)'''
     mean_products = []
-    C_shift=[]
+    
     for shift in range(max_shift):
-        #shift the latice by column
-        rolled = np.roll(lattice, shift , axis=1)
-        mean_products.append(np.mean(rolled*lattice))
+        rolled_x = np.roll(lattice, shift, axis=1)
+        rolled_y = np.roll(lattice, shift, axis=0)
+        Cx = np.mean(rolled_x * lattice) - mean_spin**2
+        Cy = np.mean(rolled_y * lattice) - mean_spin**2
+        mean_products.append((Cx + Cy)/(2 * var_spin))
     
-    C_shift=(np.array(mean_products) - mean_spin**2) / var_spin
-    #C_shift=C_shift/(L*L)
-    
-    
+    C_shift = np.array(mean_products)
     
 
-
-
-    #fit
-    def exp_decay(shift, a, ksi):
-        return a * np.exp(-shift / ksi)
-
-    shifts= np.arange(max_shift)
-
-    a_ksi, _ = curve_fit(exp_decay, shifts, C_shift, p0=[1.0, 5.0], bounds=([0, 0.1], [10, 100]))
-    a,ksi=a_ksi
+    fit_length = min(10, max_shift)
+    shifts = np.arange(fit_length)
     
-    return ksi
+    def exp_decay(shift, ksi):
+        return np.exp(-shift / ksi)
+
+    try:
+        ksi_opt, _ = curve_fit(exp_decay, shifts, C_shift, p0=[1.0], bounds=([0.01], [100]))
+        if T<0.5:
+            if ksi>2:
+                return np.nan
+        else:
+            return ksi_opt[0]
+        
+    except:
+        return np.nan
 
 
 #main code, we are ready use our functions
 def main_function(L,sample_step):
-    Ts = np.linspace(0.2,5.0, 25)
+    Ts = np.linspace(0.8, 7, 30)
     #do this at different Ts or equivalently Js
     T_energies=[]
     T_magnetism=[]
@@ -127,18 +134,20 @@ def main_function(L,sample_step):
         magnetism=[]
         #correlations=[]
         lattice=Lattice(L)
-        for _ in range(100):
+        for _ in range(1000):
             lattice = metropolis(lattice, L, T)
-            
+        cors=[]
         for sample in range(sample_step):
             lattice= metropolis(lattice,L,T)
-        T_correlations.append(correlation(lattice,L))
+            if sample%10==0: #every 10 steps in phase space
+                 cors.append(correlation(lattice,L,T))
+        T_correlations.append(np.mean(cors) if cors else np.nan)
     
     
         
     return Ts, T_correlations
     
-Ts,T_correlations=main_function(50,30000)
+Ts,T_correlations=main_function(50,1000)
 
 ''''T=[]
 T_energies=[]
@@ -163,6 +172,7 @@ T_chi=np.mean(T_chi,axis=0)'''
     
     
 plt.scatter(Ts,T_correlations,label='data')
+plt.title("this is for L=50")
 plt.xlabel("Ts")
 plt.ylabel("correlation")
 plt.legend()
