@@ -98,6 +98,31 @@ def run(lattice, L, T):
         lattice = metropolis(lattice, L, T)
     return lattice
 
+#define functions for finding TC in the plots :)
+def maxs(array,Ts,name,L):
+    max_index = np.nanargmax(array)
+    Tc_L = Ts[max_index]
+    print(f"Estimated Tc of {name} for L={L}: {Tc_L}")
+    val_Tc = array[max_index]
+    print(f"Estimated value of {name}(Tc) = {val_Tc:}")
+    return
+    
+def Tc_m(Ts, M, L):
+    Ts = np.array(Ts)
+    M_values = np.array(M)
+    
+    #work on slops
+    dMdT = np.gradient(M, Ts)
+
+    #biggest drop
+    min_slope_index = np.argmin(dMdT)
+    Tc= Ts[min_slope_index]
+    print(f"Estimated Tc of M for  L={L}: {Tc:}")
+    val_Tc = M[min_slope_index]
+    print(f"M(Tc) = {val_Tc:}")
+    return
+
+
 #main code, we are ready use our functions
 def main_function(L,sample_step):
     Ts = np.linspace(0.2,5, 15)
@@ -140,11 +165,15 @@ def main_function(L,sample_step):
         T_magnetism.append(avg_magnet)
         T_Cv.append(cv)
         T_chi.append(chi)
+    maxs(T_Cv, Ts, "CV",200)
+    maxs(T_chi, Ts, "X",200)
+    Tc_m(Ts, T_magnetism ,200)
         #T_correlations.append()
+        
+
     return Ts, T_energies, T_magnetism, T_Cv,T_chi
     
-T, T_energies, T_magnetism, T_Cv ,T_chi=main_function(100,10000)
-
+T, T_energies, T_magnetism, T_Cv ,T_chi=main_function(200,21000)
 
 '''T=[]
 T_energies=[]
