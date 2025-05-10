@@ -31,11 +31,37 @@ def real_result(time_array):
 T_real, Q_real =real_result(T)
 
 plt.figure(figsize=(10, 5))
-plt.plot(T, Q, label="Euler", linestyle="--")
+plt.scatter(T, Q, s=1 , color="red", label="Euler")
 plt.plot(T_real, Q_real, label="Exact", linewidth=2)
 plt.xlabel("Time")
 plt.ylabel("Q(t)")
 plt.title(f"Euler vs Exact for h={h}")
 plt.legend()
+plt.grid(True)
+plt.show()
+
+
+
+hs=np.logspace(-6 , -1 , 100)
+
+errors = []
+
+for h in hs:
+    q0=0
+    steps = int(5 / h)
+    T, Q = euler(h, q0,steps)
+    T_real, Q_real = real_result(T)
+    #relative error at the final step
+    err = abs(Q[-1] - Q_real[-1]) / Q_real[-1]
+    errors.append(err)
+
+
+plt.figure(figsize=(8, 5))
+plt.plot(np.log(hs), np.log(errors), marker='o', linestyle='-', color='blue')
+plt.xlabel("h")
+plt.ylabel("relative error")
+a,b =np.polyfit(np.log(hs),np.log(errors),1)
+print(f"the slope of the fit is{a}")
+#plt.plot(hs, a*hs+b ,label=f'the slop is {a}')
 plt.grid(True)
 plt.show()
