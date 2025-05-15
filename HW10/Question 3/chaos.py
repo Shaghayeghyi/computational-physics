@@ -40,10 +40,38 @@ for r in np.unique(R):
     x_r = X[R == r]
     r_list.append(r)
     x_list.append(x_r)
-    
 
+#just checking :)
+#print(r_list)
+#print(x_list)
+
+r_n = []
+#we start by one branch
+current_count = 1
+
+for i in range(len(r_list)):
+    r = r_list[i]
+    x_r = x_list[i]
+    unique_x = np.unique(np.round(x_r,4))
+    count = len(unique_x)
+    #count has doubled
+    if count == 2 * current_count:
+        r_n.append(r)
+        current_count = count
+    elif count > current_count:
+        current_count = count
+
+
+print("bifurcation at:")
+print(np.round(r_n, 5))
     
     
  
+#alpha
+
+
+
     
     
+    
+
