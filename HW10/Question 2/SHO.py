@@ -71,7 +71,6 @@ def leap(h):
         
     return time, np.array(vs_full), np.array(xs)
 
-
 def verlet(h):
     # a = -x 
     time = np.arange(0, 60, h)
@@ -80,7 +79,9 @@ def verlet(h):
     #again i need to use euler for derving another value
     x1 = xs[0] + h * vs[0]
     xs.append(x1)
-    v1=(xs[1]-xs[0])/(2*h)
+    x2=2*xs[1]-xs[0]-xs[1]*h*h
+    #just use this for v1
+    v1=(x2-xs[0])/(2*h)
     vs.append(v1)
     for n in range(1, len(time)-1):
         x_new = 2*xs[n]-xs[n-1] -xs[n]*h*h
@@ -89,6 +90,7 @@ def verlet(h):
         vs.append(v_new)
     
     return time, np.array(vs), np.array(xs)
+
 
 
 def Vverlet(h):
@@ -252,12 +254,14 @@ def leap(h):
 def verlet(h):
     # a = -x 
     time = np.arange(0, 60, h)
-    xs = [1] 
+    xs = [1]
     vs = [0] 
     #again i need to use euler for derving another value
     x1 = xs[0] + h * vs[0]
     xs.append(x1)
-    v1=(xs[1]-xs[0])/(2*h)
+    x2=2*xs[1]-xs[0]-xs[1]*h*h
+    #just use this for v1
+    v1=(x2-xs[0])/(2*h)
     vs.append(v1)
     for n in range(1, len(time)-1):
         x_new = 2*xs[n]-xs[n-1] -xs[n]*h*h
@@ -266,6 +270,7 @@ def verlet(h):
         vs.append(v_new)
     
     return time, np.array(vs), np.array(xs)
+
 
 
 def Vverlet(h):
