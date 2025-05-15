@@ -23,12 +23,27 @@ def chaos(forget,data,rs,x0):
     return xs, all_rs
 
 X, R =chaos(forget,data,rs,0.5)
+X = np.array(X)
+R = np.array(R)
 plt.figure(figsize=(12, 8))
 plt.scatter(R, X, s=0.1)
 plt.xlabel("r")
 plt.ylabel("x")
 plt.title("bifurcation")
 plt.show()
+
+
+#now we need to find the place and width of bifurcation
+r_list=[]
+x_list=[]
+for r in np.unique(R):
+    x_r = X[R == r]
+    r_list.append(r)
+    x_list.append(x_r)
+    
+
+    
+    
  
     
     
