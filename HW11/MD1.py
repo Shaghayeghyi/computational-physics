@@ -140,9 +140,33 @@ def one_verlet_step(X0, V0, F0, L, N, h, cut_off):
     return X_new, V_new, F_new
 
 
+def MD():
+    #now let's get eady for MD
+    h=0.01
+    T=1000
+    cut_off=3
+    saving=10
+    
+    #save the info of the whole system at each time step
+    trajectory=[]
+    energy=[]
+    presure=[]
+    
+    
+    #initial
+    X, V, L, N = initial()
+    F = F_t(X, L, N, cut_off)
+    for step in range(T):
+        X, V, F = one_verlet_step(X, V, F, L, N, h, cut_off)
+    
+        if step % saving == 0:
+            trajectory.append(X.copy())
+            K = K_t(V)
+            U = U_t(X, L, N, cut_off)
+            energies.append([K, U, K + U])
+        
 
-    
-    
+MD()    
 
     
     
