@@ -125,15 +125,24 @@ def F_t(X_t, L, N, cut_off):
     return F
     
 
+@njit
+def one_verlet_step(X0, V0, F0, L, N, h, cut_off):
+   
+    X_new= X0+ V0 * h + 0.5 * F0 * h**2
+    for i in range(N):
+        for d in range(2):
+            X_new[i, d] = X_new[i, d] % L
+
+    F_new = F_t(X_new, L, N, cut_off)
+
+    V_new = V0 + 0.5 * (F0 + F_new) * h
+
+    return X_new, V_new, F_new
+
+
 
     
     
 
-
-
-    
-    
-    
-    
     
     
