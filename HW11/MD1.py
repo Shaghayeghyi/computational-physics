@@ -93,7 +93,39 @@ def U_t(X_t,L,N ,cut_off):
     return U
     
     
+@njit
+def F_t(X_t, L, N, cut_off):
+    F = np.zeros((N, 2))
+    cut_off2 = cut_off ** 2
+    for i in range(N):
+        xi, yi = X_t[i, 0], X_t[i, 1]
+        for j in range(i + 1, N):
+            dx = xi - X_t[j, 0]
+            dy = yi - X_t[j, 1]
+
+            dx -= L * round(dx / L)
+            dy -= L * round(dy / L)
+
+            rij2 = dx * dx + dy * dy
+
+            if rij2 < cut_off2:
+                inv_r2 = 1.0 / rij2
+                inv_r6 = inv_r2 ** 3
+                inv_r12 = inv_r6 ** 2
+                force_scalar = 48 * inv_r2 * (inv_r12 - 0.5 * inv_r6)
+                fx = force_scalar * dx
+                fy = force_scalar * dy
+
+                #newton's 3d law!
+                F[i, 0] += fx
+                F[i, 1] += fy
+                F[j, 0] -= fx
+                F[j, 1] -= fy
+
+    return F
     
+
+
     
     
 
