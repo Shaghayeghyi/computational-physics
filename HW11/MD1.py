@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from numba import njit
+import matplotlib.animation as animation
 
 #initial values
 def initial():
@@ -12,7 +13,7 @@ def initial():
     epsilon=1
     L=20
     N=100
-    V_max=1.5
+    V_max=1.2
     #initial configuration
     X=np.zeros((N,2))
     V=np.zeros((N,2))
@@ -163,10 +164,35 @@ def MD():
             trajectory.append(X.copy())
             K = K_t(V)
             U = U_t(X, L, N, cut_off)
-            energies.append([K, U, K + U])
+            energy.append([K, U, K + U])
+
+    return trajectory
         
+#just checking
+#MD()   
 
-MD()    
-
+def animate(trajectory, L):
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.set_xlim(0, L)
+    ax.set_ylim(0, L)
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_title('MD Simulation')
     
+   
+    scat = ax.scatter([], [], s=20, color='pink', alpha=0.7)
     
+    def update(frame):
+        X_frame = trajectory[frame]
+        scat.set_offsets(X_frame)
+        return scat,
+    
+    ani = animation.FuncAnimation(fig, update, frames=len(trajectory),interval=50 ,blit=True)
+    
+    plt.close() 
+    return ani
+trajectory = MD()
+ani = animate(trajectory, L)
+ani.save('md_simulation1.gif', writer='pillow', fps=30)
+from IPython.display import HTML, display
+display(HTML(ani.to_jshtml()))
