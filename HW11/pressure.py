@@ -162,10 +162,26 @@ def MD():
         _, virial=F_t(X, L, N, cut_off)
     
         if step % saving == 0:
-            pressure.append()
+            K = K_t(V)
+            pressure.append((K+0.5*(virial))/(L*L))
             
 
-    return trajectory
+    return pressure
+
+P=MD()
+h=0.01
+T=10000
+cut_off=3
+saving=10
+L=20
+time = np.arange(len(P)) *h* saving
+#time=np.arange(10)
+plt.figure(figsize=(10, 6))
+plt.plot(time, P)
+plt.xlabel('t')
+plt.ylabel('P')
+plt.grid(True)
+plt.show()   
 
 
 
