@@ -175,8 +175,6 @@ print(Xss)
 
 Vs=MD()
 Vs=np.array(Vs)
-#Vs_cm = Vs.mean(axis=1, keepdims=True)
-#Vs -= Vs_cm
 #time steps
 time , N , dimension= Vs.shape
 max_tau=500
@@ -198,15 +196,14 @@ for tau in range(max_tau):
 
 #normalize the formula
 average_total=average_total/average_total[0]
-plt.figure(figsize=(8,5))
-plt.plot(np.arange(max_tau), average_total, marker='o')
-plt.xlabel('lags')
+dt = 0.01
+lag_times = np.arange(max_tau) * dt
+plt.figure(figsize=(8, 5))
+plt.plot(lag_times, average_total, marker='o')
+plt.xlabel('time')
 plt.ylabel('Cv')
 plt.grid(True)
 plt.show()
-
-
-
 
 
         
