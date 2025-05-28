@@ -170,7 +170,7 @@ def MD():
         
 #energy conservation
 E=MD()  
-h=0.01
+'''h=0.01
 T=1000
 cut_off=3
 saving=10
@@ -189,3 +189,29 @@ plt.ylabel('E ,K, U')
 plt.grid(True)
 plt.legend()
 plt.show()
+'''
+
+
+energy = np.array(E)
+K = energy[:, 0]
+U = energy[:, 1]
+E_total = energy[:, 2]
+time = np.arange(len(energy)) * h * saving
+N_samples = len(energy)
+
+
+K_mean = np.mean(K)
+U_mean = np.mean(U)
+E_mean = np.mean(E_total)
+
+K_std = np.std(K, ddof=1)
+U_std = np.std(U, ddof=1)
+E_std = np.std(E_total, ddof=1)
+
+K_err = K_std / np.sqrt(N_samples)
+U_err = U_std / np.sqrt(N_samples)
+E_err = E_std / np.sqrt(N_samples)
+
+print(f"Kinetic Energy: mean={K_mean:} ± {K_err:}")
+print(f"Potential Energy: mean={U_mean:} ± {U_err:}")
+print(f"Total Energy: mean={E_mean:} ± {E_err:}")
