@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from numba import njit
 import matplotlib.animation as animation
+from scipy.stats import linregress
 
 #initial values
 def initial():
@@ -150,12 +151,14 @@ def MD():
     T=10000
     cut_off=3
     saving=10
-    
+    warm_up=500
     #save the info of the whole system at each time step
     Xs=[]
     #initial
     X, V, L, N = initial()
     F , virial= F_t(X, L, N, cut_off)
+    for step in range(warm_up):
+        X, V, F = one_verlet_step(X, V, F, L, N, h, cut_off)
     for step in range(T):
         X, V, F = one_verlet_step(X, V, F, L, N, h, cut_off)
         Xs.append(X)
@@ -173,28 +176,42 @@ Xss=np.sum(Xs,axis=1)
 print(Xss)
 '''
 
-positions=MD()
-positions = np.array(positions)  # shape: (T, N, dim)
+positions = MD()
+positions = np.array(positions)
 T, N, dim = positions.shape
-#so position is giving back an array of [T,N,2]
-#at each time we have a <R^2> for our N particles
-R_t=[]
-for t in range(T):
-    positions[t] = positions[t] - X0 
-    #for all particles
-    xt , yt = positions[t,:,0], positions[t,:,1]
-    R2_mean=np.mean(xt**2+yt**2)
-    R_t.append(np.sqrt(R2_mean))
-    
+h = 0.01 
+L = 20 
 
-R_t=np.log(R_t)
-times = np.log(np.arange(T) * 0.01)
+#for each time
+rms = np.zeros(T)
+for t in range(T):
+    delta_r = positions[t] - positions[0]
+    #we need to take the real displacement into account for RMS
+    delta_r = delta_r - L * np.round(delta_r / L)
+    squared_d = np.sum(delta_r**2, axis=1)
+    rms[t] =np.sqrt(np.mean(squared_d))
+
+times = np.arange(T) * h
+
+
+fit_range = slice(500, 1500)
+log_times = np.log(times[fit_range])
+log_rms = np.log(rms[fit_range])
+
+
+a,b=np.polyfit(log_times,log_rms,1)
+D = (np.exp(b) / 2)**2
+
+
 plt.figure(figsize=(8, 5))
-plt.plot(times, R_t)
-plt.xlabel('time')
-plt.ylabel('RMS')
-plt.xlim(-2,0)
+plt.plot(log_times, log_rms, 'b.', label='Log(RMS)')
+plt.plot(log_times, b + a * log_times, 'r--', label="fit")
+plt.xlabel('log(Time)')
+plt.ylabel('log(RMS)')
+plt.legend()
 plt.grid(True)
 plt.show()
 
-
+print(f"Slope = {a:}")
+print(f"Intercept = {b:}")
+print(f"Diffusion constant D = {D:}")
