@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from numba import njit
 import matplotlib.animation as animation
+import math as m
 
 #initial values
 def initial():
@@ -204,6 +205,14 @@ plt.xlabel('time')
 plt.ylabel('Cv')
 plt.grid(True)
 plt.show()
+
+threshold = 1 / m.e
+#find the first place where the True cames out :)
+index = np.argmax(np.array(average_total) < threshold)
+
+print(lag_times[index])
+
+
 
 
         
