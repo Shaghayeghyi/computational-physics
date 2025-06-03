@@ -47,7 +47,24 @@ def happiness(grid, i,j):
     if total == 0:
         return True
     #??
-    return (same / (diff+same)) >= Bm
+    return True if (same / (diff+same)) >= Bm
+
+
+def find_unhappy(grid):
+    unhappy=[]
+    empty=[]
+    N=grid.shape[0]
+    for i in range(N):
+        for j in range(N):
+            if grid[i,j]==0:
+                empty.append((i,j))
+            elif not happiness(grid, i,j):
+                unhappy.append((i,j))
+
+    return empty, unhappy
+                
+            
+            
             
             
     
