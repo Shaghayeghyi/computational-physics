@@ -80,7 +80,7 @@ def move_agents(grid, empty, unhappy):
 
 
 def simulate(grid):
-    max_steps=100
+    max_steps=200
     history = [grid.copy()]
 
     for step in range(max_steps):
@@ -103,7 +103,7 @@ history = simulate(g)
 
 # Set up the animation
 fig, ax = plt.subplots(figsize=(10, 8))
-cmap = plt.cm.get_cmap('coolwarm', 3)
+cmap = plt.cm.colors.ListedColormap(['white', 'blue', 'red'])
 im = ax.imshow(history[0], cmap=cmap)
 def update(frame):
     im.set_data(history[frame])
@@ -111,6 +111,7 @@ def update(frame):
     return [im]
 
 ani = FuncAnimation(fig, update, frames=len(history), interval=300, blit=True)
+ani.save("schelling_model.gif", writer="pillow", fps=5, dpi=100)
 plt.close() 
 HTML(ani.to_jshtml()) 
 #use plt.show() if not in jupyter
