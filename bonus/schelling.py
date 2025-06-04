@@ -47,7 +47,7 @@ def happiness(grid, i,j):
     if total == 0:
         return True
     #??
-    return True if (same / (diff+same)) >= Bm
+    return (same / (diff+same)) >= Bm
 
 
 def find_unhappy(grid):
@@ -64,7 +64,53 @@ def find_unhappy(grid):
     return empty, unhappy
                 
             
-            
-            
-            
+def move_agents(grid, empty, unhappy):
+    random.shuffle(empty)
+    random.shuffle(unhappy)
+    #we need random choices!
+    for agent_pos, empty_pos in zip(unhappy, empty):
+        ai, aj = agent_pos
+        ei, ej = empty_pos
+        grid[ei, ej] = grid[ai, aj]
+        #leave empty behind
+        grid[ai, aj] = 0  
+
+    return grid          
+
+
+
+def simulate(grid):
+    max_steps=100
+    history = [grid.copy()]
+
+    for step in range(max_steps):
+        empty, unhappy = find_unhappy(grid)
+        if not unhappy:
+            print(f"Equilibrium reached at step {step}")
+            break
+        grid = move_agents(grid, empty, unhappy)
+        history.append(grid.copy())
     
+    return history
+
+
+from matplotlib.animation import FuncAnimation, PillowWriter
+from IPython.display import HTML
+
+# Create and simulate the grid
+g = grid()
+history = simulate(g)
+
+# Set up the animation
+fig, ax = plt.subplots(figsize=(10, 8))
+cmap = plt.cm.get_cmap('coolwarm', 3)
+im = ax.imshow(history[0], cmap=cmap)
+def update(frame):
+    im.set_data(history[frame])
+    ax.set_title(f"Step {frame}")
+    return [im]
+
+ani = FuncAnimation(fig, update, frames=len(history), interval=300, blit=True)
+plt.close() 
+HTML(ani.to_jshtml()) 
+#use plt.show() if not in jupyter
