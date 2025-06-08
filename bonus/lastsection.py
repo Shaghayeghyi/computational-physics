@@ -23,7 +23,7 @@ def grid(ratio0):
 plt.title("Randomly Created Grid")
 plt.show()'''
 
-@numba.jit(nopython=True)
+
 def happiness(grid, i,j,Bm):
     N=grid.shape[0]
     agent=grid[i,j]
@@ -51,7 +51,7 @@ def happiness(grid, i,j,Bm):
     #??
     return (same / (diff+same)) >= Bm
 
-@numba.jit(nopython=True)
+
 def find_unhappy(grid, Bm):
     unhappy=[]
     empty=[]
@@ -82,7 +82,7 @@ def move_agents(grid, empty, unhappy):
 
 
 def simulate(grid,Bm):
-    max_steps=500
+    max_steps=400
     history = [grid.copy()]
     moves=0
     for step in range(max_steps):
@@ -97,24 +97,30 @@ def simulate(grid,Bm):
     return history, moves
 
 '''#check the new import use:
+from scipy.ndimage import label
 grid = np.array([
     [1, 1, 0, 0],
     [1, 0, 0, 2],
-    [0, 0, 2, 2],
+    [0, 1, 2, 2],
     [1, 2, 2, 0]])
+
+#moore neighbors
 #number of labels
-labeled_grid1, num1 = label(grid == 1)
-labeled_grid2, num2 = label(grid == 2)
+structure = np.ones((3, 3), dtype=int)
+labeled_grid1, num1 = label(grid == 1, structure=structure)
+labeled_grid2, num2 = label(grid == 2, structure=structure)
 print(labeled_grid1)
 print(labeled_grid2)
 '''
 
-def segregation(grid,rho0):
+'''def segregation(grid,rho0):
     N = grid.shape[0]
     #just add the size of each cluster that you find to it :)
     nc=[]
-    labeled_grid1, num1 = label(grid == 1)
-    labeled_grid2, num2 = label(grid == 2)
+    #no moore neighbo according to the article
+    structure = np.array([[0,1,0],[1,1,1],[0,1,0]])  # 4neighbor
+    labeled_grid1, num1 = label(grid == 1, structure=structure)
+    labeled_grid2, num2 = label(grid == 2 ,structure=structure)
     for labels in range(1,num1+1):
         #you will have a boolean martix and then you can count all the indivisual cells with the same label
         cluster_size=np.sum(labeled_grid1==labels)
@@ -126,23 +132,55 @@ def segregation(grid,rho0):
         cluster_size=np.sum(labeled_grid2==labels)
         nc.append(cluster_size)
 
-
-    total_agents = (N ** 2) * (1 - rho0)
-    segregation = sum([size ** 2 for size in nc]) / (total_agents ** 2)
+        
+    #segregation =((2 * np.sum([size**2 for size in nc]))/(N*N*(1-rho0))**2)
+    # Count total agents of type 1 and 2
+    num_agent1 = np.sum(grid == 1)
+    num_agent2 = np.sum(grid == 2)
+    total_agents = num_agent1 + num_agent2
     
-    return segregation
-
+    # Segregation formula adapted to true population count
+    numerator = 2 * np.sum([size**2 for size in nc])
+    denominator = (total_agents)**2
     
-rhos=[0.10, 0.03, 0.18, 0.26]
+    segregation = numerator / denominator
+        
+    return segregation'''
+#2 models of defining segragation weight    
+def segregation(grid):
+    #Agent 1
+    #calculate the number of clusters each with its own label
+    #article's suggestion for sturcture
+    structure = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]])
+    labeled_1, num_1 = label(grid == 1, structure=structure)
+    #size of clusters of agent 1
+    sizes_1 = np.array([np.sum(labeled_1 == k) for k in range(1, num_1 + 1)])
+    total_1 = np.sum(grid == 1)
+    s1 = np.sum(sizes_1 ** 2) / (total_1 ** 2) if total_1 > 0 else 0
+
+    # Agent 2
+    #same rules
+    labeled_2, num_2 = label(grid == 2, structure=structure)
+    sizes_2 = np.array([np.sum(labeled_2 == k) for k in range(1, num_2 + 1)])
+    total_2 = np.sum(grid == 2)
+    s2 = np.sum(sizes_2 ** 2) / (total_2 ** 2) if total_2 > 0 else 0
+
+    total_agents = total_1 + total_2
+    weight_1 = total_1 / total_agents
+    weight_2 = total_2 / total_agents
+    
+    return weight_1 * s1 + weight_2 * s2
+    
+rhos=[0.18, 0.26, 0.06]
 for rho in rhos:
     Bms = np.linspace(0, 1.0, 15)
     segregation_coefficients = []
     for Bm in Bms:
         segregation_coefficients_run = [] 
-        for i in range(20):  
-            g = grid(0.2)
+        for i in range(10):  
+            g = grid(rho)
             history, _ = simulate(g,Bm)  
-            segregation_coefficient = segregation(history[-1], rho) 
+            segregation_coefficient = segregation(history[-1]) 
             segregation_coefficients_run.append(segregation_coefficient) 
         segregation_coefficients.append(np.mean(segregation_coefficients_run))
     
